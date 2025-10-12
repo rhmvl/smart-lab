@@ -1,19 +1,35 @@
-import { Graphics } from 'pixi.js';
-import * as CONFIG from '../config';
-import { COLORS } from '../utils/colors';
+import type { Graphics } from "pixi.js";
+import { CELL_SIZE } from "../config";
+import { COLORS } from "../utils/colors";
 
-export type CellState = 'empty' | 'start' | 'end' | 'wall';
+export type CellState = "empty" | "wall" | "start" | "end" | "process";
 
 export class Cell {
-  x: number; // Column index
-  y: number; // Row index
   state: CellState;
+  x: number;
+  y: number;
   graphics: Graphics | null = null;
 
-  constructor(y: number, x: number, state: CellState = 'empty') {
-    this.y = y; // Row
-    this.x = x; // Col
+  constructor (x: number, y: number, state: CellState) {
+    this.x = x;
+    this.y = y;
     this.state = state;
+  }
+
+  setGraphics(g: Graphics) {
+    if (this.graphics === g) return;
+    this.graphics = g;
+  }
+
+  draw(color: number) {
+    this.graphics?.fill(color);
+    this.graphics?.rect(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+  }
+
+  clone(): Cell {
+    const c = new Cell(this.x, this.y, this.state);
+    c.graphics = this.graphics;
+    return c;
   }
 
   getColor(): number {
@@ -25,22 +41,8 @@ export class Cell {
     }
   }
 
-  setState(state: CellState) {
-    if (this.state === state) return;
+  updateState(state: CellState) {
     this.state = state;
-  }
-
-  draw(color: number) {
-    const x = this.x * CONFIG.CELL_SIZE;
-    const y = this.y * CONFIG.CELL_SIZE;
-    const size = CONFIG.CELL_SIZE - 1;
-
-    this.graphics?.fill({ color: color });
-    this.graphics?.rect(x, y, size, size);
-  }
-
-  update(state: CellState) {
-    this.setState(state);
     this.draw(this.getColor());
   }
 }
