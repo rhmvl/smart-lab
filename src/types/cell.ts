@@ -22,8 +22,10 @@ export class Cell {
   }
 
   draw(color: number) {
+    // this.graphics?.clear();
     this.graphics?.fill(color);
-    this.graphics?.rect(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+    // this.graphics?.rect(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
+    this.graphics?.rect(0, 0, CELL_SIZE - 1, CELL_SIZE - 1);
   }
 
   clone(): Cell {
