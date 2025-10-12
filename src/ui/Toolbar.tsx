@@ -19,6 +19,7 @@ export const Toolbar = () => {
   const handleAlgorithmChange = (e) => {
     const algo = e.target.value;
     setSelectedAlgorithm(algo);
+    localStorage.setItem("path-algorithm", algo);
   };
 
   const handleBlockChange = (e) => {
@@ -46,6 +47,7 @@ export const Toolbar = () => {
       </div>
 
       {/* 2. Block Selector */}
+      {/* TODO: Untuk Block Selector mungkin jangan select, tapi tombol masing masing mungking dengan icon.*/}
       <div>
         <label htmlFor="block-select">Draw Mode:</label>
         <select
