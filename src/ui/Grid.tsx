@@ -4,6 +4,7 @@ import { Application, extend, useApplication } from "@pixi/react";
 import { Cell, type CellState } from "../types/cell.ts";
 import { COLORS } from "../utils/colors";
 import { CELL_SIZE, COLS, ROWS } from "../config";
+import { eventBus } from "../utils/eventBus.ts";
 
 extend({Container, Graphics});
 
@@ -18,14 +19,31 @@ export const CanvasLayer = () => {
   const [tick, __] = useState(false);
   const mouseDown = useRef(false);
 
+  const [startCell, setStartCell] = useState<{x: number, y: number} | null>(null);
+  const [endCell, setEndCell] = useState<{x: number, y: number} | null>(null);
+
   const updateCell = useCallback((x: number, y: number) => {
-    grid[y][x].updateState(localStorage.getItem('block') as CellState);
-  }, [grid, tick]); // ALSO THIS.
+    const block = localStorage.getItem('block') as CellState;
+
+    if (block === 'start') {
+      if (startCell !== null) grid[startCell.y][startCell.x].updateState('empty');
+      setStartCell({x,y}); // TODO: LocalStorage
+    }
+    if (block === 'end') {
+      if (endCell !== null) grid[endCell.y][endCell.x].updateState('empty');
+      setEndCell({x,y}); // TODO: LocalStorage
+    }
+    grid[y][x].updateState(block);
+  }, [grid, startCell, endCell, tick]); // ALSO THIS.
+
+  const drawCell = useCallback((x: number, y: number, color: number) => {
+    grid[y][x].draw(color);
+  }, [grid, tick]);
 
   const handlePointer = useCallback(
     (e: FederatedPointerEvent) => {
       if (!mouseDown.current) return;
-      const x = Math.floor(e.global.x / CELL_SIZE); // Do not delete '+ 1'. I dont know why but it works!;
+      const x = Math.floor(e.global.x / CELL_SIZE);
       const y = Math.floor(e.global.y / CELL_SIZE);
       if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
       updateCell(x, y);
@@ -37,6 +55,12 @@ export const CanvasLayer = () => {
     const handleUp = () => (mouseDown.current = false);
     window.addEventListener("mouseup", handleUp);
     return () => window.removeEventListener("mouseup", handleUp);
+  }, []);
+
+  useEffect(() => {
+    eventBus.on('run_algo', () => {
+      console.log("Algorithm is runned");
+    });
   }, []);
 
   return (
