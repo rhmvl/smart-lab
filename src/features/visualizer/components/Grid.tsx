@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication } from "@pixi/react";
-import { Cell, type CellState } from "../types/cell.ts";
-import { COLORS } from "../utils/colors";
-import { CELL_SIZE, COLS, ROWS } from "../config";
+import { Cell, type CellState } from "../../../types/cell.ts";
+import { COLORS } from "../../../utils/colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
 
 extend({Container, Graphics});
 
