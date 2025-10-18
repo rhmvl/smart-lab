@@ -9,6 +9,8 @@ export class Cell {
   x: number;
   y: number;
   graphics: Graphics | null = null;
+  var: any|null=null;
+  color: number=COLORS.empty;
 
   constructor (x: number, y: number, state: CellState) {
     this.x = x;
@@ -22,10 +24,40 @@ export class Cell {
   }
 
   draw(color: number) {
-    // this.graphics?.clear();
     this.graphics?.fill(color);
-    // this.graphics?.rect(this.x * CELL_SIZE, this.y * CELL_SIZE, CELL_SIZE - 1, CELL_SIZE - 1);
-    this.graphics?.rect(0, 0, CELL_SIZE - 1, CELL_SIZE - 1);
+    this.graphics?.rect(-CELL_SIZE / 2, -CELL_SIZE / 2, CELL_SIZE - 1, CELL_SIZE - 1);
+  }
+
+  drawPop(color: number) {
+    // TODO: the background must be white.
+    this.draw(color);
+    const bounds = this.graphics.getLocalBounds();
+
+    this.graphics?.scale.set(0);
+    gsap.to(this.graphics?.scale, {
+      x: 1,
+      y: 1,
+      duration: 0.65,
+      ease: "back.out(1.7)"
+    })
+  }
+
+  drawFade(color: number) {
+    const colorObj = { t: 0 };
+    const from = hexToCss(this.color);
+    const to = hexToCss(color);
+
+    gsap.to(colorObj, {
+      t: 1,
+      duration: 0.4,
+      ease: "power2.out",
+      onUpdate: () => {
+        const current = rgbaToHex(gsap.utils.interpolate(from, to, colorObj.t));      
+        if (!current) return;
+        this.color = current;
+        this.draw(current);
+      },
+    });
   }
 
   clone(): Cell {
@@ -45,6 +77,7 @@ export class Cell {
 
   updateState(state: CellState) {
     this.state = state;
-    this.draw(this.getColor());
+    this.color = this.getColor();
+    this.draw(this.color);
   }
 }

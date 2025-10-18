@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import '../styles/Toolbar.css'
+import { eventBus } from '../utils/eventBus';
 
 const ALGORITHMS = [
   { value: 'astar', label: 'A* Search' },
@@ -63,9 +64,11 @@ export const Toolbar = () => {
         </select>
       </div>
 
+      {/* Make a delay slider or something for localStorage.getItem('delay')*/}
+
       {/* 3. Run Button */}
       <button 
-        // onClick={() => onRun(selectedAlgorithm)} 
+        onClick={() => eventBus.emit('run_algo')} 
       >
         Run
       </button>
