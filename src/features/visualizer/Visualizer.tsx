@@ -1,4 +1,3 @@
-import React from 'react';
 // Di sini nanti akan di-import Grid, Toolbar, dan logika algoritma
 // Untuk saat ini, kita buat placeholder dulu
 export default function Visualizer() {

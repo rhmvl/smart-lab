@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Dashboard from './features/dashboard/Dashboard';
 import Calculator from './features/calculator/Calculator';
 import ArMeasure from './features/ar-measure/ArMeasure';

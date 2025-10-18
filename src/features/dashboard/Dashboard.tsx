@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import FeatureCard from './FeatureCard';
 import './Dashboard.css';
 
@@ -41,12 +41,15 @@ const generatePositions = () => [
 ].sort(() => Math.random() - 0.5); // Acak array posisi
 
 export default function Dashboard({ onSelectFeature }: DashboardProps) {
-  const [positions, setPositions] = useState(generatePositions());
+  // HANYA ambil 'positions', karena kita tidak pernah mengubahnya.
+  const [positions] = useState(generatePositions());
 
+  // HAPUS useEffect yang kosong ini karena tidak melakukan apa-apa.
+  /*
   useEffect(() => {
-    // Jika Anda ingin posisi berubah setiap refresh, state sudah menanganinya.
-    // Tidak perlu aksi tambahan di sini.
+    // ...
   }, []);
+  */
 
   return (
     <div className="dashboard-container">
