@@ -64,6 +64,8 @@ export const Toolbar = () => {
         </select>
       </div>
 
+      {/* Make a delay slider or something for localStorage.getItem('delay')*/}
+
       {/* 3. Run Button */}
       <button 
         onClick={() => eventBus.emit('run_algo')} 
