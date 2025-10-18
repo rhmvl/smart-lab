@@ -1,0 +1,90 @@
+.dashboard-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+
+  /* -- Ganti background ini -- */
+  /* background: #f0f4f8; */
+
+  /* ++ Dengan background baru ini ++ */
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient-animation 15s ease infinite;
+}
+
+/* Header dan Judul */
+.main-header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+.main-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #333;
+}
+.header-left, .header-right {
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Animasi Ikon 3D Melayang */
+.floating-icon-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.floating-icon {
+  animation: float 6s ease-in-out infinite;
+}
+.floating-icon img {
+  width: 150px; /* Sesuaikan ukuran ikon Anda */
+}
+
+.floating-shadow {
+  width: 100px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  filter: blur(10px);
+  animation: float-shadow 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-30px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes float-shadow {
+  0% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(0.8); opacity: 0.1; }
+  100% { transform: scale(1); opacity: 0.2; }
+}
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -1,0 +1,14 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Agar konten mengisi seluruh tinggi layar */
+  background-color: #f0f2f5; /* Latar belakang abu-abu muda */
+}
+
+.app-main-content {
+  flex-grow: 1; /* Konten akan mengisi ruang yang tersisa */
+  padding: 20px;
+  display: flex;
+  justify-content: center; /* Untuk memusatkan fitur di tengah */
+  align-items: flex-start; /* Fitur mulai dari atas */
+}

@@ -1,7 +1,6 @@
-import { Graphics } from "pixi.js";
-import { CELL_SIZE } from "../config";
-import { COLORS, hexToCss, rgbaToHex } from "../utils/colors";
-import gsap from "gsap";
+import type { Graphics } from "pixi.js";
+import { CELL_SIZE } from "../utils/config";
+import { COLORS } from "../utils/colors";
 
 export type CellState = "empty" | "wall" | "start" | "end" | "process";
 
