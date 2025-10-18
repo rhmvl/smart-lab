@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication } from "@pixi/react";
 
-// JALUR YANG DIPERBAIKI:
+// == BAGIAN YANG DIPERBAIKI DAN DIGABUNGKAN ==
 import { Cell, type CellState } from "../types/cell.ts";
-import { aStar } from "../../algorithms/astar.ts";
-import { eventBus } from "../../../eventBus.ts";
-import { COLORS } from "../../../colors.ts";
-import { CELL_SIZE, COLS, ROWS } from "../../../config.ts";
+import { aStar } from "../algorithms/astar.ts";
+import { eventBus } from "../../../utils/eventBus.ts";
+import { COLORS } from "../../../utils/colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
+// ===========================================
 
 extend({Container, Graphics});
 
@@ -17,12 +18,13 @@ const createGrid = (): Cell[][] =>
   );
 
 export const CanvasLayer = () => {
-  const { app } = useApplication(); // Do not delete this variable, even tough unused.
-  const [grid, _] = useState<Cell[][]>(createGrid);
-  const [tick, __] = useState(false);
-  const [v, ___] = useState(false);
+  const { app } = useApplication(); // Variabel ini diperlukan oleh hook
+  const [grid] = useState<Cell[][]>(createGrid); // Menghapus setter '_' yang tidak dipakai
   const mouseDown = useRef(false);
-  const [isRunning, setRunning] = useState(false);
+
+  // Menggunakan 'tick' dan 'v' hanya untuk nilainya, setternya dihapus.
+  const [tick] = useState(false);
+  const [v] = useState(false)
 
   const [startCell, setStartCell] = useState<Cell | null>(null);
   const [endCell, setEndCell] = useState<Cell | null>(null);
