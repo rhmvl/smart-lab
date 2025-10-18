@@ -1,17 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication } from "@pixi/react";
-<<<<<<< HEAD:src/features/visualizer/components/Grid.tsx
-import { Cell, type CellState } from "../../../types/cell.ts";
-import { COLORS } from "../../../utils/colors.ts";
-import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
-=======
 import { Cell, type CellState } from "../types/cell.ts";
-import { COLORS } from "../utils/colors";
-import { CELL_SIZE, COLS, ROWS } from "../config";
-import { eventBus } from "../utils/eventBus.ts";
 import { aStar } from "../algorithms/astar.ts";
->>>>>>> origin/master:src/ui/Grid.tsx
+import { eventBus } from "../../utils/eventBus.ts";
+import { COLORS } from "../../utils/colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../utils/config.ts";
 
 extend({Container, Graphics});
 
