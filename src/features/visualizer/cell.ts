@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-import type { Graphics } from "pixi.js";
-import { CELL_SIZE } from "../utils/config";
-import { COLORS } from "../utils/colors";
-=======
 import { Graphics } from "pixi.js";
-import { CELL_SIZE } from "../config";
-import { COLORS, hexToCss, rgbaToHex } from "../utils/colors";
 import gsap from "gsap";
->>>>>>> origin/master
+../../utils/config
+// JALUR YANG DIPERBAIKI../../utils/colorsN:
+import { CELL_SIZE } from "../../../config";
+import { COLORS, hexToCss, rgbaToHex } from "../../../colors";
 
 export type CellState = "empty" | "wall" | "start" | "end" | "process";
 
@@ -31,17 +27,17 @@ export class Cell {
   }
 
   draw(color: number) {
+    this.graphics?.clear(); // Membersihkan gambar sebelumnya
     this.graphics?.fill(color);
     this.graphics?.rect(-CELL_SIZE / 2, -CELL_SIZE / 2, CELL_SIZE - 1, CELL_SIZE - 1);
   }
 
   drawPop(color: number) {
-    // TODO: the background must be white.
     this.draw(color);
-    const bounds = this.graphics.getLocalBounds();
+    if (!this.graphics) return;
 
-    this.graphics?.scale.set(0);
-    gsap.to(this.graphics?.scale, {
+    this.graphics.scale.set(0);
+    gsap.to(this.graphics.scale, {
       x: 1,
       y: 1,
       duration: 0.65,
@@ -59,7 +55,7 @@ export class Cell {
       duration: 0.4,
       ease: "power2.out",
       onUpdate: () => {
-        const current = rgbaToHex(gsap.utils.interpolate(from, to, colorObj.t));      
+        const current = rgbaToHex(gsap.utils.interpolate(from, to, colorObj.t));
         if (!current) return;
         this.color = current;
         this.draw(current);

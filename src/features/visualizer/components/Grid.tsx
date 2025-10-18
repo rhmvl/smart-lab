@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication } from "@pixi/react";
+
+// JALUR YANG DIPERBAIKI:
 import { Cell, type CellState } from "../types/cell.ts";
-import { aStar } from "../algorithms/astar.ts";
-import { eventBus } from "../../utils/eventBus.ts";
-import { COLORS } from "../../utils/colors.ts";
-import { CELL_SIZE, COLS, ROWS } from "../../utils/config.ts";
+import { aStar } from "../../algorithms/astar.ts";
+import { eventBus } from "../../../eventBus.ts";
+import { COLORS } from "../../../colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../../config.ts";
 
 extend({Container, Graphics});
 
@@ -31,15 +33,15 @@ export const CanvasLayer = () => {
 
     if (block === 'start') {
       if (startCell !== null) startCell.updateState('empty');
-      setStartCell(cell); // TODO: LocalStorage
+      setStartCell(cell);
     }
     if (block === 'end') {
       if (endCell !== null) endCell.updateState('empty');
-      setEndCell(cell); // TODO: LocalStorage
+      setEndCell(cell);
     }
     cell.updateState(block);
     cell.drawPop(cell.color);
-  }, [grid, startCell, endCell, tick]); // ALSO THIS.
+  }, [grid, startCell, endCell, tick]);
 
   const drawCell = useCallback((x: number, y: number, color: number) => {
     if (grid[y][x].state === 'empty')
@@ -70,7 +72,6 @@ export const CanvasLayer = () => {
   useEffect(() => {
     const handler = () => {
       clearVisual();
-      // console.log("Algorithm is runned");
       if (!startCell || !endCell) return;
       aStar(grid, startCell, endCell, drawCell);
     };
