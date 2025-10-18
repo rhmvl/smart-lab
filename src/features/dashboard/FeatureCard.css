@@ -1,0 +1,67 @@
+.feature-card {
+  position: absolute; /* Penting untuk posisi acak */
+  width: 180px;
+  height: 180px;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  animation: float 6s ease-in-out infinite;
+}
+
+.feature-card:hover {
+  transform: translateY(-15px) scale(1.05);
+  box-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.15), 0 0 20px var(--glow-color);
+}
+
+/* Hapus atau komentari style ini */
+/*
+.card-icon {
+  font-size: 50px;
+  margin-bottom: 10px;
+}
+*/
+
+/* Tambahkan style baru ini */
+.card-icon-image {
+  width: 60px;  /* Atur lebar gambar */
+  height: 60px; /* Atur tinggi gambar */
+  margin-bottom: 15px;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Deskripsi yang muncul saat hover */
+.card-description {
+  position: absolute;
+  bottom: -10px; /* Mulai dari bawah */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  padding: 10px;
+  background: #333;
+  color: white;
+  border-radius: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, bottom 0.3s ease;
+  pointer-events: none; /* Agar tidak mengganggu hover */
+}
+
+.feature-card:hover .card-description {
+  opacity: 1;
+  visibility: visible;
+  bottom: -40px; /* Muncul ke bawah */
+}
