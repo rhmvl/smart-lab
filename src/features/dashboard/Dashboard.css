@@ -1,14 +1,23 @@
+/* LAPISAN 2: Konten yang Bisa di-scroll */
 .dashboard-container {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;
+  /* Mengambil alih seluruh layar, persis seperti .dowscal */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 
-  /* -- Ganti background ini -- */
-  /* background: #f0f4f8; */
+  /* KUNCI UTAMA: Mengizinkan scroll HANYA di dalam lapisan ini */
+  overflow-y: auto;
+  
+  /* Hapus semua properti 'background' dari sini */
 
-  /* ++ Dengan background baru ini ++ */
+  perspective: 1000px;
+  box-sizing: border-box;
+
+  /* Beri padding bawah agar konten tidak mentok saat scroll */
+  padding-bottom: 100px;
+  /* Latar belakang ini akan selalu diam */
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradient-animation 15s ease infinite;

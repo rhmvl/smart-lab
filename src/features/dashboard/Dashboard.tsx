@@ -3,7 +3,7 @@ import FeatureCard from './FeatureCard';
 import './Dashboard.css';
 
 interface DashboardProps {
-  onSelectFeature: (feature: string) => void;
+  onSelectFeature: (feature: string, iconUrl: string) => void;
 }
 
 const features = [
@@ -32,7 +32,14 @@ const features = [
     delay: '1s' // ++ Tambahkan delay
   },
 ]
-
+// ++ TAMBAHKAN DAFTAR ANIMASI INI ++
+const entryAnimations = [
+  'slide-in-from-bottom-left',
+  'slide-in-from-top',
+  'slide-in-from-right',
+];
+// Acak daftar animasi
+const shuffledAnimations = [...entryAnimations].sort(() => Math.random() - 0.5);
 // Fungsi untuk mengacak posisi
 const generatePositions = () => [
   { top: '30%', left: '20%' },
@@ -55,9 +62,9 @@ export default function Dashboard({ onSelectFeature }: DashboardProps) {
     <div className="dashboard-container">
       {/* Navigasi Atas */}
       <header className="main-header">
-        <div className="header-left">Sering</div>
         <div className="main-title">Field Project Assistant</div>
         <div className="header-right">Catatan Pencari</div>
+        <div className="header-left">Sering</div>
       </header>
 
       {/* Menu Interaktif */}
@@ -68,8 +75,12 @@ export default function Dashboard({ onSelectFeature }: DashboardProps) {
           title={feature.title}
           description={feature.description}
           color={feature.color}
-          onClick={() => onSelectFeature(feature.id)}
-          style={{ ...positions[index], animationDelay: feature.delay }}
+          onClick={() => onSelectFeature(feature.id , feature.icon)}
+          style={{
+            ...positions[index],
+            animationDelay: `${feature.delay}, 1s`, // Delay untuk animasi masuk & melayang
+            animationName: `${shuffledAnimations[index]}, zero-gravity`, // Terapkan nama animasi
+          }}
         />
       ))}
     </div>
