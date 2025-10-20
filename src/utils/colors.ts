@@ -1,13 +1,13 @@
 export const COLORS = {
-  background: 0x1e1e2e,
+  background: 0xA6A6A6,
   empty: 0xf5f5f5,
   wall: 0x2e3440,
   start: 0x81c784,
   end: 0xe57373,
   path: 0xab47bc,
-  closedSet: 0x64b5f6,
-  // closedSet: 0xba68c8,
-  openSet: 0xffa726,
+  closedSet: 0x80DFFF,
+  // path: 0xCDA4FF,
+  openSet: 0xFFF280,
 }
 
 export function hexToCss(hex: number) {

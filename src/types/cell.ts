@@ -1,17 +1,7 @@
 import { Graphics } from "pixi.js";
 import gsap from "gsap";
-
-// JALUR YANG SUDAH DIPERBAIKI
 import { CELL_SIZE } from "../utils/config";
-import { COLORS, hexToCss, rgbaToHex } from "../utils/colors";
-
-// ++ TAMBAHKAN KELAS INI DI SINI ++
-class Var {
-  gCost: number = 0;
-  hCost: number = 0;
-  fCost: number = 0;
-  parent: Cell | null = null;
-}
+import { COLORS, hexToCss, rgbaToHex } from "../utils/colors.ts";
 
 export type CellState = "empty" | "wall" | "start" | "end" | "process";
 
@@ -21,13 +11,12 @@ export class Cell {
   y: number;
   graphics: Graphics | null = null;
   color: number=COLORS.empty;
-  var: Var; // ++ TAMBAHKAN PROPERTI INI ++
+  var: any|null=null; // Any because there will be many different algorithm variable
 
   constructor (x: number, y: number, state: CellState) {
     this.x = x;
     this.y = y;
     this.state = state;
-    this.var = new Var(); // ++ INISIALISASI PROPERTI INI ++
   }
 
   setGraphics(g: Graphics) {
@@ -36,17 +25,15 @@ export class Cell {
   }
 
   draw(color: number) {
-    this.graphics?.clear();
     this.graphics?.fill(color);
     this.graphics?.rect(-CELL_SIZE / 2, -CELL_SIZE / 2, CELL_SIZE - 1, CELL_SIZE - 1);
   }
 
   drawPop(color: number) {
     this.draw(color);
-    if (!this.graphics) return;
 
-    this.graphics.scale.set(0);
-    gsap.to(this.graphics.scale, {
+    this.graphics?.scale.set(0);
+    gsap.to(this.graphics?.scale, {
       x: 1,
       y: 1,
       duration: 0.65,
