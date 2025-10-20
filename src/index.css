@@ -1,10 +1,28 @@
 /* Reset dasar agar tampilan konsisten di semua browser */
-body {
+/*body {
+/*  margin: 0;
+/*  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+/*    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+/*    sans-serif;
+/*  -webkit-font-smoothing: antialiased;
+/*  -moz-osx-font-smoothing: grayscale;
+/*  background-color: #f0f2f5;
+/*}
+/* src/index.css */
+
+/* LAPISAN 1: Latar Belakang Gradien yang Dikunci */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* KUNCI UTAMA: Mencegah scroll di level body */
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f0f2f5;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Animasi untuk latar belakang */
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }

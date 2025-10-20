@@ -12,3 +12,43 @@
   justify-content: center; /* Untuk memusatkan fitur di tengah */
   align-items: flex-start; /* Fitur mulai dari atas */
 }
+.transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  /* Kita sengaja tidak memberi background agar terlihat "menembus" */
+}
+
+.transition-icon {
+  animation: zoom-in 0.8s forwards cubic-bezier(0.7, 0, 0.3, 1);
+}
+
+@keyframes zoom-in {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(20); /* Perbesar ikon hingga menutupi layar */
+    opacity: 0;
+  }
+}
+
+.back-button {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  padding: 10px 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}

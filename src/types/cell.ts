@@ -1,6 +1,7 @@
-import type { Graphics } from "pixi.js";
+import { Graphics } from "pixi.js";
+import gsap from "gsap";
 import { CELL_SIZE } from "../utils/config";
-import { COLORS } from "../utils/colors";
+import { COLORS, hexToCss, rgbaToHex } from "../utils/colors.ts";
 
 export type CellState = "empty" | "wall" | "start" | "end" | "process";
 
@@ -9,8 +10,8 @@ export class Cell {
   x: number;
   y: number;
   graphics: Graphics | null = null;
-  var: any|null=null;
   color: number=COLORS.empty;
+  var: any|null=null; // Any because there will be many different algorithm variable
 
   constructor (x: number, y: number, state: CellState) {
     this.x = x;
@@ -29,9 +30,7 @@ export class Cell {
   }
 
   drawPop(color: number) {
-    // TODO: the background must be white.
     this.draw(color);
-    const bounds = this.graphics.getLocalBounds();
 
     this.graphics?.scale.set(0);
     gsap.to(this.graphics?.scale, {
@@ -52,7 +51,7 @@ export class Cell {
       duration: 0.4,
       ease: "power2.out",
       onUpdate: () => {
-        const current = rgbaToHex(gsap.utils.interpolate(from, to, colorObj.t));      
+        const current = rgbaToHex(gsap.utils.interpolate(from, to, colorObj.t));
         if (!current) return;
         this.color = current;
         this.draw(current);
