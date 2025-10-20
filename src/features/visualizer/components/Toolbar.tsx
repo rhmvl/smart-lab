@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import '../styles/Toolbar.css'
-import { eventBus } from '../utils/eventBus';
+import { eventBus } from '../../../utils/eventBus';
 
 const ALGORITHMS = [
   { value: 'astar', label: 'A* Search' },
@@ -15,7 +14,7 @@ const BLOCKS = [
 
 export const Toolbar = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(ALGORITHMS[0].value);
-  const [selectedBlock, setSelectedBlock] = useState(BLOCKS[0].value);
+  const [selectedBlock, setSelectedBlock] = useState(localStorage.getItem('block') || BLOCKS[0].value);
 
   const handleAlgorithmChange = (e) => {
     const algo = e.target.value;

@@ -1,14 +1,20 @@
 import type { Cell } from "../types/cell.ts";
 import { COLORS } from "../../../utils/colors.ts";
 
-// HAPUS 'class Var' dari sini karena sudah dipindahkan ke cell.ts
+// TODO: When the algorithm is running, and we are placing block, we need to update the shortest path to not include the wall, if there is no shortest path run again.
+
+class Var {
+  gCost: number = 0;
+  hCost: number = 0;
+  fCost: number = 0;
+  parent: Cell | null = null;
+}
 
 function calculateHeuristic(a: Cell, b: Cell) {
   return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
 function getNeighbors(cell: Cell, grid: Cell[][]) {
-  // ... (Fungsi ini tetap sama) ...
   const neigh: Cell[] = []
   const dir = [
     { dx: 0, dy: -1 }, // Up
@@ -30,8 +36,7 @@ function getNeighbors(cell: Cell, grid: Cell[][]) {
 }
 
 async function animatePath(cell: Cell, drawCell: (x: number, y: number, color: number) => void) {
-  // ... (Fungsi ini tetap sama) ...
-  let temp: Cell | null = cell; // Tambahkan tipe | null
+  let temp: Cell | null = cell;
 
   while (temp !== null) {
     drawCell(temp.x, temp.y, COLORS.path);
@@ -45,7 +50,7 @@ export const aStar = async (grid: Cell[][], startCell: Cell, endCell: Cell, draw
   const openSet: Cell[] = [];
   const closedSet: Set<Cell> = new Set();
   
-  // Inisialisasi properti 'var' yang sudah ada di startCell
+  startCell.var = new Var();
   startCell.var.hCost = calculateHeuristic(startCell, endCell);
   startCell.var.fCost = startCell.var.hCost;
   openSet.push(startCell);
@@ -70,6 +75,7 @@ export const aStar = async (grid: Cell[][], startCell: Cell, endCell: Cell, draw
       const nCell = openSet.find((n) => n.x === neigh.x && n.y === neigh.y);
 
       if (!nCell || tGCost < nCell.var.gCost) {
+        neigh.var = new Var();
         neigh.var.gCost = tGCost;
         neigh.var.hCost = calculateHeuristic(neigh, endCell);
         neigh.var.fCost = neigh.var.gCost + neigh.var.hCost;
@@ -81,7 +87,6 @@ export const aStar = async (grid: Cell[][], startCell: Cell, endCell: Cell, draw
         
         drawCell(neigh.x, neigh.y, COLORS.openSet);
 
-        // ++ BUAT JEDA ANIMASI MENJADI AMAN ++
         const delay = parseInt(localStorage.getItem('delay') || '10');
         await new Promise((resolve) => setTimeout(resolve, delay));
       }

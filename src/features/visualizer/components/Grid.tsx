@@ -1,14 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication } from "@pixi/react";
-
-// == BAGIAN YANG DIPERBAIKI DAN DIGABUNGKAN ==
-import { Cell, type CellState } from "../types/cell.ts";
-import { aStar } from "../algorithms/astar.ts";
-import { eventBus } from "../../../utils/eventBus.ts";
+import { Cell, type CellState } from "../../../types/cell.ts";
 import { COLORS } from "../../../utils/colors.ts";
 import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
-// ===========================================
+import { eventBus } from "../../../utils/eventBus.ts";
+import { aStar } from "../algorithms/astar.ts";
 
 extend({Container, Graphics});
 
@@ -18,13 +15,10 @@ const createGrid = (): Cell[][] =>
   );
 
 export const CanvasLayer = () => {
-  const { app } = useApplication(); // Variabel ini diperlukan oleh hook
-  const [grid] = useState<Cell[][]>(createGrid); // Menghapus setter '_' yang tidak dipakai
+  useApplication();
+  const [grid] = useState<Cell[][]>(createGrid);
   const mouseDown = useRef(false);
-
-  // Menggunakan 'tick' dan 'v' hanya untuk nilainya, setternya dihapus.
-  const [tick] = useState(false);
-  const [v] = useState(false)
+  let running = false;
 
   const [startCell, setStartCell] = useState<Cell | null>(null);
   const [endCell, setEndCell] = useState<Cell | null>(null);
@@ -33,6 +27,7 @@ export const CanvasLayer = () => {
     const cell = grid[y][x];
     const block = localStorage.getItem('block') as CellState;
 
+    if (cell.state === block) return;
     if (block === 'start') {
       if (startCell !== null) startCell.updateState('empty');
       setStartCell(cell);
@@ -41,18 +36,22 @@ export const CanvasLayer = () => {
       if (endCell !== null) endCell.updateState('empty');
       setEndCell(cell);
     }
+
     cell.updateState(block);
     cell.drawPop(cell.color);
-  }, [grid, startCell, endCell, tick]);
+  }, [grid, startCell, endCell]);
 
   const drawCell = useCallback((x: number, y: number, color: number) => {
     if (grid[y][x].state === 'empty')
       grid[y][x].drawFade(color);
-  }, [grid, tick]);
+  }, [grid]);
 
   const clearVisual = useCallback(() => {
-    // TODO.
-  }, []);
+    // TODO: Maybe there is a better way for performace.
+    grid.map((row) => {
+      row.map((cell) => cell.updateState(cell.state))
+    })
+  }, [grid]);
 
   const handlePointer = useCallback(
     (e: FederatedPointerEvent) => {
@@ -67,15 +66,23 @@ export const CanvasLayer = () => {
 
   useEffect(() => {
     const handleUp = () => (mouseDown.current = false);
+    const offRun = () => (running = !running);
+
+    eventBus.on("toggle_run", offRun);
     window.addEventListener("mouseup", handleUp);
-    return () => window.removeEventListener("mouseup", handleUp);
+    return () => {
+      window.removeEventListener("mouseup", handleUp);
+      eventBus.off("toggle_run", offRun);
+    }
   }, []);
 
   useEffect(() => {
-    const handler = () => {
+    const handler = async () => {
       clearVisual();
-      if (!startCell || !endCell) return;
-      aStar(grid, startCell, endCell, drawCell);
+      if (running || !startCell || !endCell) return;
+      running = true;
+      await aStar(grid, startCell, endCell, drawCell);
+      running = false;
     };
 
     eventBus.on("run_algo", handler);
@@ -86,7 +93,7 @@ export const CanvasLayer = () => {
   }, [grid, startCell, endCell, drawCell]);
 
   return (
-    <pixiContainer eventMode="static" key={`${v}`}
+    <pixiContainer eventMode="static"
       onPointerDown={(e: FederatedPointerEvent) => {
       mouseDown.current = true;
       handlePointer(e);
@@ -97,7 +104,7 @@ export const CanvasLayer = () => {
       {grid.map((row, y) =>
         row.map((cell, x) => (
           <pixiGraphics
-            key={`${x}-${y}-${tick}`}
+            key={`${x}-${y}`}
             x={x * CELL_SIZE + CELL_SIZE / 2}
             y={y * CELL_SIZE + CELL_SIZE / 2}
             draw={(g) => {
