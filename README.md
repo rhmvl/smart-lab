@@ -1,4 +1,4 @@
-# Algorithm Explorer
+# Smart Lab
 
 ## Library Used
 
