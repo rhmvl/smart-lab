@@ -8,25 +8,25 @@ interface DashboardProps {
 
 const features = [
   {
-    id: 'visualizer',
+    id: 'algo-works',
     icon: 'https://cdn-icons-png.flaticon.com/512/5236/5236195.png',
-    title: 'Algo-Explorer',
+    title: 'Algo Works',
     description: 'Visualisasikan cara kerja algoritma secara interaktif.',
     color: '#007bff',
     delay: '0s' // ++ Tambahkan delay
   },
   {
-    id: 'calculator',
+    id: 'calc-forge',
     icon: 'https://cdn-icons-png.flaticon.com/512/3713/3713488.png',
-    title: 'Kalkulator',
-    description: 'Hitung rumus fisika & kimia dengan cepat dan akurat.',
+    title: 'Calc Forge',
+    description: 'Hitung rumus ilmiah dengan cepat dan akurat.',
     color: '#28a745',
     delay: '0.5s' // ++ Tambahkan delay
   },
   {
-    id: 'ar-measure',
+    id: 'ar-lab',
     icon: 'https://cdn-icons-png.flaticon.com/512/3593/3593527.png',
-    title: 'Pengukur Jarak',
+    title: 'AR Lab',
     description: 'Ukur objek di dunia nyata menggunakan kamera Anda.',
     color: '#ffc107',
     delay: '1s' // ++ Tambahkan delay
@@ -38,9 +38,7 @@ const entryAnimations = [
   'slide-in-from-top',
   'slide-in-from-right',
 ];
-// Acak daftar animasi
 const shuffledAnimations = [...entryAnimations].sort(() => Math.random() - 0.5);
-// Fungsi untuk mengacak posisi
 const generatePositions = () => [
   { top: '30%', left: '20%' },
   { top: '55%', left: '40%' },
@@ -48,26 +46,18 @@ const generatePositions = () => [
 ].sort(() => Math.random() - 0.5); // Acak array posisi
 
 export default function Dashboard({ onSelectFeature }: DashboardProps) {
-  // HANYA ambil 'positions', karena kita tidak pernah mengubahnya.
   const [positions] = useState(generatePositions());
-
-  // HAPUS useEffect yang kosong ini karena tidak melakukan apa-apa.
-  /*
-  useEffect(() => {
-    // ...
-  }, []);
-  */
 
   return (
     <div className="dashboard-container">
-      {/* Navigasi Atas */}
+      {/* Navigasi */}
       <header className="main-header">
-        <div className="main-title">Field Project Assistant</div>
+        <div className="main-title">Smart Lab</div>
         <div className="header-right">Catatan Pencari</div>
         <div className="header-left">Sering</div>
       </header>
 
-      {/* Menu Interaktif */}
+      {/* Menu */}
       {features.map((feature, index) => (
         <FeatureCard
           key={feature.id}

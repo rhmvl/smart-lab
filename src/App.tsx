@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import Dashboard from './features/dashboard/Dashboard';
-import Calculator from './features/calculator/Calculator';
-import ArMeasure from './features/ar-measure/ArMeasure';
-import Visualizer from './features/visualizer/Visualizer';
+import CalcForge from './features/calc-forge/CalcForge';
+import ArLab from './features/ar-lab/ArLab';
+import AlgoWorks from './features/algo-works/AlgoWorks';
 import Notes from './features/notes/Notes';
 import './App.css';
 
@@ -27,12 +27,12 @@ function App() {
 
   const renderView = () => {
     switch (currentView) {
-      case 'visualizer':
-        return <Visualizer />;
-      case 'calculator':
-        return <Calculator />;
-      case 'ar-measure':
-        return <ArMeasure />;
+      case 'algo-works':
+        return <AlgoWorks />;
+      case 'calc-forge':
+        return <CalcForge />;
+      case 'ar-lab':
+        return <ArLab />;
       default:
         // Berikan fungsi yang benar ke Dashboard
         return <Dashboard onSelectFeature={handleFeatureSelect} />;
@@ -70,7 +70,7 @@ function App() {
     </div>
   );
 }
-//
+
 //export default App;
 //import { useState } from 'react';
 //import Dashboard from './features/dashboard/Dashboard';
