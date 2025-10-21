@@ -28,13 +28,15 @@ export const CanvasLayer = () => {
     const block = localStorage.getItem('block') as CellState;
 
     if (cell.state === block) return;
-    if (block === 'start') {
-      if (startCell !== null) startCell.updateState('empty');
-      setStartCell(cell);
-    }
-    if (block === 'end') {
-      if (endCell !== null) endCell.updateState('empty');
-      setEndCell(cell);
+    switch (block) {
+      case "start":
+        if (startCell !== null) startCell.updateState('empty');
+        setStartCell(cell);
+        break;
+      case "end":
+        if (endCell !== null) endCell.updateState('empty');
+        setEndCell(cell);
+        break;
     }
 
     cell.updateState(block);

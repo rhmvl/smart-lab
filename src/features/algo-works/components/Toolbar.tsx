@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ChangeEvent } from 'react';
 import { eventBus } from '../../../utils/eventBus';
 
 const ALGORITHMS = [
@@ -16,13 +16,13 @@ export const Toolbar = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(ALGORITHMS[0].value);
   const [selectedBlock, setSelectedBlock] = useState(localStorage.getItem('block') || BLOCKS[0].value);
 
-  const handleAlgorithmChange = (e) => {
+  const handleAlgorithmChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const algo = e.target.value;
     setSelectedAlgorithm(algo);
     localStorage.setItem("path-algorithm", algo);
   };
 
-  const handleBlockChange = (e) => {
+  const handleBlockChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const block = e.target.value;
     setSelectedBlock(block);
     localStorage.setItem("block", block);

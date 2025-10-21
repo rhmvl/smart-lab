@@ -1,4 +1,3 @@
-import React from 'react';
 import MenuItem from '../common/MenuItem'; // Kita akan buat ini
 import './Navbar.css'; // Untuk styling navbar
 
@@ -12,26 +11,26 @@ export default function Navbar({ activeFeature, onSelectFeature }: NavbarProps) 
     <nav className="navbar">
       <div className="navbar-brand">
         <img src="/vite.svg" alt="Logo" className="navbar-logo" /> {/* Anda bisa ganti logo nanti */}
-        <h1>Field Project Assistant</h1>
+        <h1>Smmart Lab</h1>
       </div>
       <div className="navbar-menu">
         <MenuItem
-          title="Visualizer"
-          isActive={activeFeature === 'visualizer'}
-          onClick={() => onSelectFeature('visualizer')}
+          title="Algo Works"
+          isActive={activeFeature === 'algo-works'}
+          onClick={() => onSelectFeature('algo-works')}
         />
         <MenuItem
-          title="Kalkulator"
-          isActive={activeFeature === 'calculator'}
-          onClick={() => onSelectFeature('calculator')}
+          title="Calc Forge"
+          isActive={activeFeature === 'calc-forge'}
+          onClick={() => onSelectFeature('calc-forge')}
         />
         <MenuItem
-          title="Pengukur Jarak"
-          isActive={activeFeature === 'ar-measure'}
-          onClick={() => onSelectFeature('ar-measure')}
+          title="Ar Lab"
+          isActive={activeFeature === 'ar-lab'}
+          onClick={() => onSelectFeature('ar-lab')}
         />
         <MenuItem
-          title="Catatan"
+          title="Notes"
           isActive={activeFeature === 'notes'}
           onClick={() => onSelectFeature('notes')}
         />
