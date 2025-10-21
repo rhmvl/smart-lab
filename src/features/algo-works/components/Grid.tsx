@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
-import { Application, extend, useApplication } from "@pixi/react";
+import { Application, extend } from "@pixi/react";
 import { Cell, type CellState } from "../../../types/cell.ts";
 import { COLORS } from "../../../utils/colors.ts";
 import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
@@ -15,22 +15,19 @@ const createGrid = (): Cell[][] =>
   );
 
 export const CanvasLayer = () => {
-  // useApplication();
   const [grid] = useState<Cell[][]>(createGrid);
   const mouseDown = useRef(false);
+  const mouseType = useRef(false); // false: left, true: right;
   let running = false;
 
-  // const [startCell, setStartCell] = useState<Cell | null>(null);
-  // const [endCell, setEndCell] = useState<Cell | null>(null);
   const startCell = useRef<Cell | null>(null);
   const endCell = useRef<Cell | null>(null);
 
-  const updateCell = useCallback((x: number, y: number) => {
+  const updateCell = useCallback((x: number, y: number, state: CellState) => {
     const cell = grid[y][x];
-    const block = localStorage.getItem('block') as CellState;
 
-    if (cell.state === block) return;
-    switch (block) {
+    if (cell.state === state) return;
+    switch (state) {
       case "start":
         if (startCell !== null) startCell.current?.updateState('empty');
         startCell.current = cell
@@ -41,7 +38,7 @@ export const CanvasLayer = () => {
         break;
     }
 
-    cell.updateState(block);
+    cell.updateState(state);
     cell.drawPop(cell.color);
   }, [grid]);
 
@@ -57,13 +54,23 @@ export const CanvasLayer = () => {
     })
   }, [grid]);
 
-  const handlePointer = useCallback(
-    (e: FederatedPointerEvent) => {
-      if (!mouseDown.current) return;
+  const handlePointer = useCallback((e: FederatedPointerEvent) => {
+      if (!mouseDown.current || e.pointerType !== "mouse") return;
+      
+      if (e.button === 2) mouseType.current = true;
+      else if (e.button === 0) mouseType.current = false;
+
       const x = Math.floor(e.global.x / CELL_SIZE);
       const y = Math.floor(e.global.y / CELL_SIZE);
       if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
-      updateCell(x, y);
+      
+      if (mouseType.current) {
+        updateCell(x, y, 'empty');
+        return;
+      }
+      
+      const block = localStorage.getItem('block') as CellState;
+      updateCell(x, y, block);
     },
     [updateCell]
   );
@@ -72,12 +79,13 @@ export const CanvasLayer = () => {
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
 
-    updateVisual();
+    updateVisual(); // Update the grid visual on startup.
 
     eventBus.on("toggle_run", offRun);
-    window.addEventListener("mouseup", handleUp);
+    window.addEventListener("pointerup", handleUp);
+    window.addEventListener("contextmenu", (e) => e.preventDefault());
     return () => {
-      window.removeEventListener("mouseup", handleUp);
+      window.removeEventListener("pointerup", handleUp);
       eventBus.off("toggle_run", offRun);
     }
   }, []);
@@ -85,7 +93,7 @@ export const CanvasLayer = () => {
   useEffect(() => {
     const handler = async () => {
       updateVisual();
-      if (running || !startCell || !endCell) return;
+      if (running || !startCell.current || !endCell.current) return;
       running = true;
       await aStar(grid, startCell.current, endCell.current, drawCell);
       running = false;

@@ -1,4 +1,4 @@
-export default function ArMeasure() {
+export default function ArLab() {
   return (
     <div>
       <h2>Fitur Pengukur AR</h2>

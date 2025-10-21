@@ -6,6 +6,8 @@ import AlgoWorks from './features/algo-works/AlgoWorks';
 import Notes from './features/notes/Notes';
 import './App.css';
 
+// TODO: I hope you must use react-router-dom.
+
 function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [isTransitioning, setIsTransitioning] = useState(false);

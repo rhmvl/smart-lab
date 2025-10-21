@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { hitungVolumeBalok } from './calculatorLogic'; // Import logika
 
-export default function Calculator() {
+export default function CalcForge() {
   const [panjang, setPanjang] = useState(0);
   const [lebar, setLebar] = useState(0);
   const [tinggi, setTinggi] = useState(0);
