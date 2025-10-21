@@ -15,13 +15,15 @@ const createGrid = (): Cell[][] =>
   );
 
 export const CanvasLayer = () => {
-  useApplication();
+  // useApplication();
   const [grid] = useState<Cell[][]>(createGrid);
   const mouseDown = useRef(false);
   let running = false;
 
-  const [startCell, setStartCell] = useState<Cell | null>(null);
-  const [endCell, setEndCell] = useState<Cell | null>(null);
+  // const [startCell, setStartCell] = useState<Cell | null>(null);
+  // const [endCell, setEndCell] = useState<Cell | null>(null);
+  const startCell = useRef<Cell | null>(null);
+  const endCell = useRef<Cell | null>(null);
 
   const updateCell = useCallback((x: number, y: number) => {
     const cell = grid[y][x];
@@ -30,25 +32,25 @@ export const CanvasLayer = () => {
     if (cell.state === block) return;
     switch (block) {
       case "start":
-        if (startCell !== null) startCell.updateState('empty');
-        setStartCell(cell);
+        if (startCell !== null) startCell.current?.updateState('empty');
+        startCell.current = cell
         break;
       case "end":
-        if (endCell !== null) endCell.updateState('empty');
-        setEndCell(cell);
+        if (endCell !== null) endCell.current?.updateState('empty');
+        endCell.current = cell;
         break;
     }
 
     cell.updateState(block);
     cell.drawPop(cell.color);
-  }, [grid, startCell, endCell]);
+  }, [grid]);
 
   const drawCell = useCallback((x: number, y: number, color: number) => {
     if (grid[y][x].state === 'empty')
       grid[y][x].drawFade(color);
   }, [grid]);
 
-  const clearVisual = useCallback(() => {
+  const updateVisual = useCallback(() => {
     // TODO: Maybe there is a better way for performace.
     grid.map((row) => {
       row.map((cell) => cell.updateState(cell.state))
@@ -70,6 +72,8 @@ export const CanvasLayer = () => {
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
 
+    updateVisual();
+
     eventBus.on("toggle_run", offRun);
     window.addEventListener("mouseup", handleUp);
     return () => {
@@ -80,10 +84,10 @@ export const CanvasLayer = () => {
 
   useEffect(() => {
     const handler = async () => {
-      clearVisual();
+      updateVisual();
       if (running || !startCell || !endCell) return;
       running = true;
-      await aStar(grid, startCell, endCell, drawCell);
+      await aStar(grid, startCell.current, endCell.current, drawCell);
       running = false;
     };
 
