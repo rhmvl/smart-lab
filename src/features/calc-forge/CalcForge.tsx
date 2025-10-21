@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { hitungVolumeBalok } from './calculatorLogic'; // Import logika
 
 export default function Calculator() {

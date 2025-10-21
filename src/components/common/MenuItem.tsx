@@ -1,4 +1,3 @@
-import React from 'react';
 import './MenuItem.css'; // Untuk styling item menu
 
 interface MenuItemProps {
