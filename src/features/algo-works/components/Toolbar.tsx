@@ -63,6 +63,18 @@ export const Toolbar = () => {
         </select>
       </div>
 
+      {/* MAKE THIS TO BE A TOGGLE AND CHANGED IT TO ICON */}
+      <button 
+        onClick={() => eventBus.emit('camera_on')} 
+      >
+        Camera Update On
+      </button>
+      <button 
+        onClick={() => eventBus.emit('camera_off')} 
+      >
+        Camera Update Off
+      </button> 
+
       {/* Make a delay slider or something for localStorage.getItem('delay')*/}
 
       {/* 3. Run Button */}
