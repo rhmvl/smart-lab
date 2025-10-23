@@ -48,5 +48,5 @@ Currently under construction, AR Lab aims to **measure, calculate, and analyze**
 
 ## License
 
-This project is under **experimental** and primarily used for **educational and research purposes**.
+This project is under **MIT License**
 
