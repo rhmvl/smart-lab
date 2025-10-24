@@ -83,13 +83,14 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   }, [grid]);
 
   const handlePointer = useCallback((e: FederatedPointerEvent) => {
-      if (!mouseDown.current) return;
+      if (!mouseDown.current || !containerRef.current) return;
       
       if (e.button === 2) mouseType.current = true;
       else if (e.button === 0) mouseType.current = false;
 
-      const x = Math.floor(e.global.x / CELL_SIZE);
-      const y = Math.floor(e.global.y / CELL_SIZE);
+      const point = containerRef.current.toLocal(e.global);
+      const x = Math.floor(point.x / CELL_SIZE);
+      const y = Math.floor(point.y / CELL_SIZE);
       if (x < 0 || y < 0 || x >= COLS || y >= ROWS) return;
       
       if (mouseType.current && e.pointerType === "mouse") {
