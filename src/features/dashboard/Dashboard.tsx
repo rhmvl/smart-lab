@@ -50,14 +50,6 @@ export default function Dashboard({ onSelectFeature }: DashboardProps) {
 
   return (
     <div className="dashboard-container">
-      {/* Navigasi */}
-      <header className="main-header">
-        <div className="main-title">Smart Lab</div>
-        <div className="header-right">Catatan Pencari</div>
-        <div className="header-left">Sering</div>
-      </header>
-
-      {/* Menu */}
       {features.map((feature, index) => (
         <FeatureCard
           key={feature.id}

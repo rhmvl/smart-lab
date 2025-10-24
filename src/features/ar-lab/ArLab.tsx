@@ -1,8 +1,7 @@
+import { UnderDevelopment } from "../under-development/UnderDevelopment";
+
 export default function ArLab() {
   return (
-    <div>
-      <h2>Fitur Pengukur AR</h2>
-      <p>Fitur ini akan mengakses kamera Anda.</p>
-    </div>
+    <UnderDevelopment featureName="Ar Lab" />
   );
 }

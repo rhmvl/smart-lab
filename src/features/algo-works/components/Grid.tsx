@@ -71,6 +71,9 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
         if (endCell !== null) endCell.current?.updateState('empty');
         endCell.current = cell;
         break;
+      case "empty":
+        // TODO;
+        break;
     }
 
     cell.updateState(state);
@@ -152,7 +155,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   useEffect(() => {
     const handler = async () => {
       updateVisual();
-      if (running || !startCell.current || !endCell.current) return;
+      if (running || !startCell.current || !endCell.current) return alert("Start cell or end cell is not placed");
       running = true;
       await aStar(grid, startCell.current, endCell.current, drawCell);
       running = false;

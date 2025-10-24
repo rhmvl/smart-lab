@@ -52,3 +52,21 @@
   cursor: pointer;
   font-weight: bold;
 }
+
+@keyframes float-react {
+  0% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+  100% { transform: translateY(0px) scale(1); }
+}
+@keyframes float-shadow-react {
+  0% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(0.8); opacity: 0.1; }
+  100% { transform: scale(1); opacity: 0.2; }
+}
+.animate-float-react {
+  animation: float-react 6s ease-in-out infinite;
+}
+.animate-float-shadow-react {
+  animation: float-shadow-react 6s ease-in-out infinite;
+}
+
