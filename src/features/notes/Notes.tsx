@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Notes.css';
+import { Notebook, Plus, X } from 'lucide-react';
 
 // Mendefinisikan struktur data untuk satu catatan
 interface Note {
@@ -18,9 +19,6 @@ export default function Notes({ isOpen, onClose }: NotesProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // == BAGIAN LOGIKA YANG HILANG (DIISI KEMBALI) ==
-
-  // 1. Memuat catatan dari localStorage saat komponen pertama kali muncul
   useEffect(() => {
     try {
       const savedNotes = localStorage.getItem('project-assistant-notes');
@@ -67,9 +65,15 @@ export default function Notes({ isOpen, onClose }: NotesProps) {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button className="action-btn" title="Tambah Catatan Baru" onClick={addNote}>+</button>
-        <button className="action-btn" title="Riwayat (Fitur akan datang)">📜</button>
-        <button className="close-btn" title="Tutup" onClick={onClose}>×</button>
+        <button className="action-btn" title="Tambah Catatan Baru" onClick={addNote}>
+          <Plus className="w-5 h-5" />
+        </button>
+        <button className="action-btn" title="Riwayat (Fitur akan datang)">
+          <Notebook className="w-5 h-5" />
+        </button>
+        <button className="close-btn" title="Tutup" onClick={onClose}>
+          <X className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="notes-list">

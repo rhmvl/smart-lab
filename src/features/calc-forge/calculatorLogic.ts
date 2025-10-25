@@ -1,5 +1,3 @@
-// Di sini kita menaruh semua rumus yang diubah dari Python ke TypeScript
-
 /**
  * Menghitung volume balok.
  * @param panjang - Panjang balok (meter)

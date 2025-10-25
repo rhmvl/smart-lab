@@ -1,151 +1,72 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Dashboard from './features/dashboard/Dashboard';
 import CalcForge from './features/calc-forge/CalcForge';
 import ArLab from './features/ar-lab/ArLab';
 import AlgoWorks from './features/algo-works/AlgoWorks';
 import Notes from './features/notes/Notes';
 import './App.css';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { FeatureView } from './components/layout/FeatureView';
+import { TransitionOverlay } from './components/layout/TransitionOverlay';
+import { WEBSITE_URL } from './utils/config';
+import Navbar from './components/layout/Navbar';
+import { FlaskConicalIcon, type LucideIcon } from 'lucide-react';
 
-function App() {
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [transitionIcon, setTransitionIcon] = useState('');
-  const [isNotesOpen, setIsNotesOpen] = useState(false); // State baru untuk panel catatan
+// Main Router-enabled App Component
+const AppContent = () => {
+  const navigate = useNavigate();
+  const [isNotesOpen, setNotesOpen] = useState(false);
+  const [isTransitioning, setTransitioning] = useState(false);
+  const [transitionIcon, setTransitionIcon] = useState<LucideIcon>(FlaskConicalIcon);
+  const iconColor = useRef("white");
 
-  const handleFeatureSelect = (feature: string, iconUrl: string) => {
-    setTransitionIcon(iconUrl);
-    setIsTransitioning(true);
+  const handleFeatureSelect = useCallback((featurePath: string, icon: LucideIcon, color: string) => {
+    setTransitionIcon(icon);
+    iconColor.current = color;
+    setTransitioning(true);
+    
+    // Delay navigation to show the transition animation
     setTimeout(() => {
-      setCurrentView(feature);
-      setIsTransitioning(false);
-    }, 800);
-  };
+      navigate(WEBSITE_URL + '/' + featurePath);
+      setTransitioning(false);
+    }, 900);
+  }, [navigate]);
 
-  const handleBackToDashboard = () => {
-    setCurrentView('dashboard');
-  };
-
-  const renderView = () => {
-    switch (currentView) {
-      case 'algo-works':
-        return <AlgoWorks />;
-      case 'calc-forge':
-        return <CalcForge />;
-      case 'ar-lab':
-        return <ArLab />;
-      default:
-        // Berikan fungsi yang benar ke Dashboard
-        return <Dashboard onSelectFeature={handleFeatureSelect} />;
-    }
-  };
+  // const handleBackToDashboard = () => {
+  //   if (!isTransitioning) {
+  //   setTransitionIcon(FlaskConicalIcon); // Use a default icon for reverse transition
+  //   setTransitioning(true);
+  //   setTimeout(() => {
+  //     navigate('/smart-lab');
+  //     setTransitioning(false);
+  //   }, 700);
+  // }};
 
   return (
-    <div className="app-container">
-      {renderView()}
+    <div className="relative w-full min-h-screen overflow-hidden">
+      <div className="pt-16">
+        <Navbar setNotesOpen={setNotesOpen} />
+          <Routes>
+            <Route path={WEBSITE_URL} element={<Dashboard onSelectFeature={handleFeatureSelect} />} />
+            <Route path={`${WEBSITE_URL}/algo-works/*`} element={<AlgoWorks />} />
+            <Route path={`${WEBSITE_URL}/calc-forge`} element={<CalcForge />} />
+            <Route path={`${WEBSITE_URL}/ar-lab`} element={<ArLab />} />
+            <Route path="*" element={<FeatureView title="404" description="Halaman tidak ditemukan." bgColor="bg-red-700" />} />
+        </Routes>
+      </div>
+      {/* Panel Catatan (Modal) */}
+      <Notes isOpen={isNotesOpen} onClose={() => setNotesOpen(false)} />
 
       {/* Lapisan Animasi Transisi */}
-      {isTransitioning && (
-        <div className="transition-overlay">
-          <img src={transitionIcon} alt="Transition Icon" className="transition-icon" />
-        </div>
-      )}
-
-      {/* === KONTROL UI TERPUSAT === */}
-      <div className="global-ui-layer">
-        {/* Tombol Kembali (hanya muncul jika bukan di dashboard) */}
-        {currentView !== 'dashboard' && (
-          <button onClick={handleBackToDashboard} className="app-button back-btn">
-            Kembali
-          </button>
-        )}
-
-        {/* Tombol Catatan (selalu muncul) */}
-        <button onClick={() => setIsNotesOpen(true)} className="app-button notes-btn">
-          Catatan
-        </button>
-      </div>
-
-      {/* Panel Catatan (dikontrol oleh App.tsx) */}
-      <Notes isOpen={isNotesOpen} onClose={() => setIsNotesOpen(false)} />
+      <TransitionOverlay isTransitioning={isTransitioning} icon={transitionIcon} color={iconColor.current} />
     </div>
   );
-}
+};
 
-//export default App;
-//import { useState } from 'react';
-//import Dashboard from './features/dashboard/Dashboard';
-//import Calculator from './features/calculator/Calculator';
-//import ArMeasure from './features/ar-measure/ArMeasure';
-//import Visualizer from './features/visualizer/Visualizer';
-//import Notes from './features/notes/Notes';
-//import './App.css'; // Pastikan ada file ini untuk styling transisi
-//
-//function App() {
-//  const [currentView, setCurrentView] = useState('dashboard');
-//  const [isTransitioning, setIsTransitioning] = useState(false);
-//  const [transitionIcon, setTransitionIcon] = useState('');
-//  const handleFeatureSelect = (feature: string, iconUrl: string) => {
-//    setTransitionIcon(iconUrl);
-//    setIsTransitioning(true);
-//    setTimeout(() => {
-//      setCurrentView(feature);
-//      setIsTransitioning(false);
-//    }, 800);
-//  };
-//
-//  const handleBackToDashboard = () => {
-//    setCurrentView('dashboard');
-//  };
-//
-//  const renderView = () => {
-//    switch (currentView) {
-//      case 'visualizer':
-//        return <Visualizer />;
-//      case 'calculator':
-//        return <Calculator />;
-//      case 'ar-measure':
-//        return <ArMeasure />;
-//      // case 'notes':
-//      //   return <Notes />;
-//      default:
-//        return <Dashboard onSelectFeature={handleFeatureSelect} />;
-//    }
-//  };
-//
-//  return (
-//    <div className="app-container">
-//      {/* Tombol kembali ke dashboard (opsional) */}
-//      {currentView !== 'dashboard' && (
-//        <button
-//          onClick={() => setCurrentView('dashboard')}
-//          style={{ position: 'fixed', top: 20, left: 20, zIndex: 1000 }}
-//        >
-//          Kembali
-//        </button>
-//      )}
-//      {renderView()}
-//      
-//      {/* LAPISAN ANIMASI TRANSISI */}
-//      {isTransitioning && (
-//        <div className="transition-overlay">
-//          <img src={transitionIcon} alt="Transition Icon" className="transition-icon" />
-//        </div>
-//      )}
-//      
-//      {/* Tombol kembali ke dashboard */}
-//      {currentView !== 'dashboard' && (
-//        <button onClick={handleBackToDashboard} className="back-button">
-//          Kembali
-//        </button>
-//      )}
-//      {renderView()}
-//
-//      {/* ... your transition overlay and back button ... */}
-//
-//      {/* Add the Notes component here */}
-//      <Notes />
-//    </div>
-//  );
-//}
-//
+const App: React.FC = () => (
+  <BrowserRouter>
+    <AppContent />
+  </BrowserRouter>
+);
+
 export default App;

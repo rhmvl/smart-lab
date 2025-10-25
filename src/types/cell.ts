@@ -32,8 +32,10 @@ export class Cell {
   drawPop(color: number) {
     this.draw(color);
 
-    this.graphics?.scale.set(0);
-    gsap.to(this.graphics?.scale, {
+    if (!this.graphics) return;
+
+    this.graphics.scale.set(0);
+    gsap.to(this.graphics.scale, {
       x: 1,
       y: 1,
       duration: 0.65,

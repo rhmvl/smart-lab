@@ -1,5 +1,5 @@
-import type { Cell } from "../types/cell.ts";
-import { COLORS } from "../../../utils/colors.ts";
+import type { Cell } from "../../types/cell.ts";
+import { COLORS } from "../../../../utils/colors.ts";
 
 // TODO: When the algorithm is running, and we are placing block, we need to update the shortest path to not include the wall, if there is no shortest path run again.
 
@@ -42,7 +42,7 @@ async function animatePath(cell: Cell, drawCell: (x: number, y: number, color: n
     drawCell(temp.x, temp.y, COLORS.path);
     temp = temp.var.parent;
 
-    await new Promise((resolve) => setTimeout(resolve, 10));
+    await new Promise((resolve) => setTimeout(resolve, 20));
   }
 }
 
