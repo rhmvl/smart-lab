@@ -20,11 +20,18 @@ export default {
           '50%': { 'background-position': '100% 50%' },
           '100%': { 'background-position': '0% 50%' },
         },
+        'zero-gravity': {
+          '0%, 100%': { transform: 'translate(0, 0) rotate(0deg)' },
+          '25%': { transform: 'translate(5px, 10px) rotate(1deg)' },
+          '50%': { transform: 'translate(0, -5px) rotate(-1deg)' },
+          '75%': { transform: 'translate(-5px, 5px) rotate(0.5deg)' },
+        },
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',
         'float-shadow': 'float-shadow 6s ease-in-out infinite',
         'gradient': 'gradient 15s ease infinite', /* Note: Used 'gradient' name here */
+        'zero-gravity': 'zero-gravity 12s ease-in-out infinite',
       },
     },
   },

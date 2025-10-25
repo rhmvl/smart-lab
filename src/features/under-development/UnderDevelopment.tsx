@@ -38,22 +38,6 @@ export const UnderDevelopment = ({
           We’re still working on this part of the app. Please check back soon
         </p>
 
-        {/* Optional actions */}
-        <div className="mt-8 flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={() => window.history.back()}
-            className="px-5 py-2.5 rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition"
-          >
-            Go Back
-          </button>
-          <a
-            href="/"
-            className="px-5 py-2.5 rounded-md border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-          >
-            Return Home
-          </a>
-        </div>
-
         {/* Footer note */}
         <p className="mt-10 text-xs text-gray-400 dark:text-gray-500">
           © {new Date().getFullYear()} Smart Lab

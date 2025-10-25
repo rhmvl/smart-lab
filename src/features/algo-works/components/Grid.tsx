@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
-import { Application, extend, useTick } from "@pixi/react";
+import { Application, extend, useApplication, useTick } from "@pixi/react";
 import { Cell, type CellState } from "../../../types/cell.ts";
 import { COLORS } from "../../../utils/colors.ts";
 import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
@@ -14,11 +14,12 @@ const createGrid = (): Cell[][] =>
     Array.from({ length: COLS }, (_, x) => new Cell(x, y, 'empty'))
   );
 
-// TODO: Fix some camera cordinate bug.
+// TODO: The grid is not loaded when changing the page.
 export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: number, viewportHeight: number }) => {
   const [grid] = useState<Cell[][]>(createGrid);
-  const [cameraUpdate, setCameraUpdate] = useState(true);
-  
+  useApplication();
+  const getCamUpdate = () => !!parseInt(localStorage.getItem("camera-update") || '0');
+
   // FOR CAMERA
   const lastPos = useRef({x: 0, y: 0 });
   const dragStartPos = useRef({ x: 0, y: 0 }); 
@@ -133,22 +134,15 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   useEffect(() => {
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
-    const camOn = () => setCameraUpdate(true);
-    const camOff = () => setCameraUpdate(false);
 
     updateVisual(); // Update the grid visual on startup.
 
     eventBus.on("toggle_run", offRun);
-    eventBus.on("camera_on", camOn);
-    eventBus.on("camera_off", camOff);
-
     window.addEventListener("pointerup", handleUp);
     window.addEventListener("contextmenu", (e) => e.preventDefault());
     return () => {
       window.removeEventListener("pointerup", handleUp);
       eventBus.off("toggle_run", offRun);
-      eventBus.off("camera_on", camOn);
-      eventBus.off("camera_off", camOff);
     }
   }, []);
 
@@ -169,7 +163,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   }, [grid, startCell, endCell, drawCell]);
 
   useTick(() => {
-    if (containerRef.current && cameraUpdate && mouseDown.current) {
+    if (containerRef.current && getCamUpdate() && mouseDown.current) {
       containerRef.current.x = posRef.current.x;
       containerRef.current.y = posRef.current.y;
     }
@@ -180,7 +174,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
       ref={containerRef}
       onPointerDown={(e: FederatedPointerEvent) => {
       mouseDown.current = true;
-      if (cameraUpdate && mouseDown.current) {
+      if (getCamUpdate() && mouseDown.current) {
         startCameraPos.current = { x: posRef.current.x, y: posRef.current.y };
         dragStartPos.current = { x: e.global.x, y: e.global.y };
         lastPos.current = { x: e.global.x, y: e.global.y };
@@ -190,7 +184,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
       handlePointer(e);
     }}
     onPointerMove={(e: FederatedPointerEvent) => {
-      if (cameraUpdate) {
+      if (getCamUpdate()) {
         handleCamera(e);
         return;
       }
