@@ -45,7 +45,6 @@ function AlgoMenu() {
   // TODO: Maybe add backdrop blur to with animated-background style.
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative z-0 overflow-hidden">
-      {/* Background overlay for readability */}
 
       <div className="relative z-10 flex flex-col items-center">
         <h1 className="text-4xl md:text-5xl font-extrabold text-white mb-8 drop-shadow-lg">

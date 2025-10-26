@@ -10,9 +10,27 @@ class Var {
   parent: Cell | null = null;
 }
 
-function calculateHeuristic(a: Cell, b: Cell) {
-  return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+function calculateHeuristic(a: Cell, b: Cell, fromDir?: {dx: number, dy: number}) {
+  const dx = Math.abs(a.x - b.x);
+  const dy = Math.abs(a.y - b.y);
+  let h = dx + dy; // base Manhattan
+
+  if (fromDir) {
+    // Predict preferred direction vector toward the goal
+    const dirToGoal = {
+      dx: Math.sign(b.x - a.x),
+      dy: Math.sign(b.y - a.y)
+    };
+
+    // If current direction aligns with goal direction, slightly reduce heuristic
+    if (fromDir.dx === dirToGoal.dx && fromDir.dy === dirToGoal.dy) {
+      h -= 0.2; // bias for straight continuation
+    }
+  }
+
+  return h;
 }
+
 
 function getNeighbors(cell: Cell, grid: Cell[][]) {
   const neigh: Cell[] = []

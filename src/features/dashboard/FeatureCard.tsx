@@ -25,16 +25,14 @@ export default function FeatureCard({
         ...style,
         '--glow-color': color,
       } as CSSProperties}
-      className={`
-        absolute w-[180px] h-[180px]
-        bg-white/80 backdrop-blur-md border border-white/30
+      className={`absolute w-[180px] h-[180px]
+        bg-gray-800 backdrop-blur-md border border-white/30
         rounded-2xl shadow-lg cursor-pointer
         flex flex-col items-center justify-center text-center
         transition-transform duration-300 ease-in-out
         animate-zero-gravity hover:scale-105 hover:-translate-y-3
         hover:shadow-[0_16px_40px_rgba(0,0,0,0.15),0_0_20px_var(--glow-color)]
-        group
-      `}
+`}
     >
       <div className="mb-3">
         <Icon size={48} color={color} strokeWidth={2.2} />

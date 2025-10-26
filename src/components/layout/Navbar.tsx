@@ -20,7 +20,7 @@ export default function Navbar({ setNotesOpen }: NavbarProps) {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 shadow-md">
+    <div className="navbar">
       <div className="flex items-center justify-between py-3 max-w-screen-xl mx-auto">
         {/* LOGO */}
         <Link
@@ -35,7 +35,10 @@ export default function Navbar({ setNotesOpen }: NavbarProps) {
         {/* NAV LINKS */}
         <nav className="hidden md:flex items-center space-x-8">
           {links.map((link) => {
-            const isActive = location.pathname === link.path;
+            const isActive = link.path === links[0].path
+              ? location.pathname === links[0].path // exact match for home
+              : location.pathname.startsWith(link.path + '/')
+                || location.pathname === link.path;
             return (
               <Link
                 key={link.name}
@@ -56,8 +59,7 @@ export default function Navbar({ setNotesOpen }: NavbarProps) {
         {/* NOTES BUTTON */}
         <button
           onClick={() => setNotesOpen(true)}
-          className="flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-full font-semibold shadow-md hover:from-indigo-600 hover:to-pink-600 transition-all cursor-pointer
-"
+          className="notes-button"
         >
           <Notebook className="w-5 h-5" />
           <span className="hidden sm:inline">Notes</span>

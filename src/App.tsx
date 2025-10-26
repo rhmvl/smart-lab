@@ -4,12 +4,11 @@ import CalcForge from './features/calc-forge/CalcForge';
 import ArLab from './features/ar-lab/ArLab';
 import AlgoWorks from './features/algo-works/AlgoWorks';
 import Notes from './features/notes/Notes';
-import './App.css';
+import Navbar from './components/layout/Navbar';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { FeatureView } from './components/layout/FeatureView';
 import { TransitionOverlay } from './components/layout/TransitionOverlay';
 import { WEBSITE_URL } from './utils/config';
-import Navbar from './components/layout/Navbar';
 import { FlaskConicalIcon, type LucideIcon } from 'lucide-react';
 
 // Main Router-enabled App Component
@@ -46,12 +45,12 @@ const AppContent = () => {
     <div className="relative w-full min-h-screen overflow-hidden">
       <div className="pt-16">
         <Navbar setNotesOpen={setNotesOpen} />
-          <Routes>
-            <Route path={WEBSITE_URL} element={<Dashboard onSelectFeature={handleFeatureSelect} />} />
-            <Route path={`${WEBSITE_URL}/algo-works/*`} element={<AlgoWorks />} />
-            <Route path={`${WEBSITE_URL}/calc-forge`} element={<CalcForge />} />
-            <Route path={`${WEBSITE_URL}/ar-lab`} element={<ArLab />} />
-            <Route path="*" element={<FeatureView title="404" description="Halaman tidak ditemukan." bgColor="bg-red-700" />} />
+        <Routes>
+          <Route path={WEBSITE_URL} element={<Dashboard onSelectFeature={handleFeatureSelect} />} />
+          <Route path={`${WEBSITE_URL}/algo-works/*`} element={<AlgoWorks />} />
+          <Route path={`${WEBSITE_URL}/calc-forge`} element={<CalcForge />} />
+          <Route path={`${WEBSITE_URL}/ar-lab`} element={<ArLab />} />
+          <Route path="*" element={<FeatureView title="404" description="Halaman tidak ditemukan." bgColor="bg-red-700" />} />
         </Routes>
       </div>
       {/* Panel Catatan (Modal) */}
