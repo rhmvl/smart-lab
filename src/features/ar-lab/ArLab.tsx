@@ -1,7 +1,7 @@
-import { UnderDevelopment } from "../under-development/UnderDevelopment";
+// src/features/ar-lab/ArLab.tsx
+import React from 'react';
+import ArLabView from './ArLabView'; // Impor komponen view baru
 
 export default function ArLab() {
-  return (
-    <UnderDevelopment featureName="Ar Lab" />
-  );
+  return <ArLabView />;
 }

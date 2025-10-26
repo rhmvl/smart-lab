@@ -1,74 +1,264 @@
-/* LAPISAN 2: Konten yang Bisa di-scroll */
+/* Import Tailwind (jika belum ada di index.css) */
+/* @import "tailwindcss/base"; */
+/* @import "tailwindcss/components"; */
+/* @import "tailwindcss/utilities"; */
+
+/* Container Luar (jika perlu style tambahan selain Tailwind) */
+.dashboard-outer-container {
+  /* Tambahkan perspective di sini agar anak-anaknya bisa miring */
+  perspective: 1000px;
+  /* Background bisa diatur di sini jika tidak di index.css */
+  /* background: linear-gradient(...); */
+  /* background-attachment: fixed; */
+}
+
+/* Container Dalam untuk Kartu (jika diperlukan style absolut positioning) */
+/* Kelas ini sekarang hanya untuk menampung, posisi dihandle FeatureCard */
 .dashboard-container {
-  /* Mengambil alih seluruh layar, persis seperti .dowscal */
-  position: absolute;
+    position: relative; /* Agar kartu absolut bisa diposisikan */
+    width: 100%;
+    /* Atur tinggi sesuai kebutuhan, misal agar tidak tertutup header */
+    height: calc(100vh - 150px); /* Contoh: tinggi viewport dikurangi padding atas/bawah */
+    z-index: 5; /* Di atas partikel */
+}
+
+/* Header Kustom (jika tidak pakai Tailwind) */
+.main-header {
+  position: absolute; /* Atau fixed jika ingin tetap di atas saat scroll (jika ada scroll) */
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-
-  /* KUNCI UTAMA: Mengizinkan scroll HANYA di dalam lapisan ini */
-  overflow-y: auto;
-  
-  /* Hapus semua properti 'background' dari sini */
-
-  perspective: 1000px;
-  box-sizing: border-box;
-
-  /* Beri padding bawah agar konten tidak mentok saat scroll */
-  padding-bottom: 100px;
-  /* Latar belakang ini akan selalu diam */
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradient-animation 15s ease infinite;
-}
-
-/* Animasi Ikon 3D Melayang */
-.floating-icon-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  padding: 15px 30px;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  z-index: 10;
+  /* background-color: rgba(255, 255, 255, 0.1); */ /* Opsional: Efek glass */
+  /* backdrop-filter: blur(8px); */ /* Opsional: Efek glass (hati-hati performa) */
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.2); */ /* Opsional */
 }
 
-.floating-icon {
-  animation: float 6s ease-in-out infinite;
-}
-.floating-icon img {
-  width: 150px; /* Sesuaikan ukuran ikon Anda */
+.main-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: white; /* Sesuaikan warna */
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-.floating-shadow {
-  width: 100px;
-  height: 20px;
-  background: rgba(0, 0, 0, 0.2);
+.header-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.header-icon-btn {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  filter: blur(10px);
-  animation: float-shadow 6s ease-in-out infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px; /* Ukuran ikon di dalam tombol */
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+.header-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+  transform: scale(1.1) rotate(10deg);
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-30px); }
-  100% { transform: translateY(0px); }
+/* Kartu Fitur Interaktif (Gaya dasar + animasi) */
+.feature-card-interactive {
+  position: absolute;
+  opacity: 0; /* Mulai transparan */
+  /* Terapkan transform awal (akan diubah oleh JS perspektif) */
+  transform: rotateX(var(--rotateX, 0deg)) rotateY(var(--rotateY, 0deg));
+  /* Transisi untuk hover dan perspektif */
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+  /* Definisikan variabel CSS untuk rotasi */
+  --rotateX: 0deg;
+  --rotateY: 0deg;
+  transform: rotateX(var(--rotateX)) rotateY(var(--rotateY));
+
+  /* Transisi untuk hover dan perubahan perspektif */
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease;
+
+  /* === TERAPKAN ANIMASI DI SINI === */
+  /* Format: nama durasi timing-function delay iteration-count direction fill-mode */
+  animation:
+    slide-in-default 1s forwards cubic-bezier(0.25, 1, 0.5, 1), /* Animasi masuk */
+    zero-gravity 12s ease-in-out infinite; /* Animasi melayang (mulai setelah delay dari style) */
+
+  /* ... sisa style kartu Anda (width, height, background, dll.) ... */
+   width: 180px;
+   min-height: 180px;
+   padding: 20px;
+   background-color: rgba(255, 255, 255, 0.9);
+   border-radius: 20px;
+   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   text-align: center;
+   cursor: pointer;
+   color: #333;
 }
 
-@keyframes float-shadow {
-  0% { transform: scale(1); opacity: 0.2; }
-  50% { transform: scale(0.8); opacity: 0.1; }
-  100% { transform: scale(1); opacity: 0.2; }
+.feature-card-interactive:hover {
+  /* Hentikan animasi melayang saat hover */
+  animation-play-state: running, paused !important; /* Masuk tetap jalan, melayang pause */
+  /* Efek hover bisa ditambahkan di sini atau dengan Tailwind */
+   transform: translateY(-10px) scale(1.05) rotateX(var(--rotateX)) rotateY(var(--rotateY));
+   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 0 0 25px var(--glow-color, rgba(255,255,255,0.5));
+}
+
+/* Pastikan deskripsi terlihat */
+.feature-card-interactive p {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.4;
+    margin-top: 8px; /* Beri jarak dari judul */
+}
+
+/* Keyframes Animasi (Harus ada di CSS global atau di sini) */
+@keyframes slide-in-default {
+    from { transform: translateY(100px) rotate(-5deg); opacity: 0; }
+    to { transform: translateY(0) rotate(0deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); opacity: 1; }
 }
 @keyframes gradient-animation {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% 50%; /* Mulai dari posisi gradien awal */
   }
   50% {
-    background-position: 100% 50%;
+    background-position: 100% 50%; /* Pindahkan posisi gradien ke ujung kanan di tengah animasi */
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% 50%; /* Kembali ke posisi awal di akhir animasi */
   }
+}
+@keyframes zero-gravity {
+    /* Perbarui agar menggabungkan translate/rotate dari JS */
+    0%, 100% { transform: translate(0, 0) rotate(0deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); }
+    25% { transform: translate(5px, 10px) rotate(1deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); }
+    50% { transform: translate(0, -5px) rotate(-1deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); }
+    75% { transform: translate(-5px, 5px) rotate(0.5deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); }
+}
+@keyframes slide-in-from-bottom-left {
+    from { transform: translate(-100px, 100px) rotate(-15deg); opacity: 0; }
+    to { transform: translate(0, 0) rotate(0deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); opacity: 1; }
+}
+@keyframes slide-in-from-top {
+    from { transform: translateY(-100px) rotate(10deg); opacity: 0; }
+    to { transform: translateY(0) rotate(0deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); opacity: 1; }
+}
+@keyframes slide-in-from-right {
+    from { transform: translateX(100px) rotate(5deg); opacity: 0; }
+    to { transform: translateX(0) rotate(0deg) rotateX(var(--rotateX)) rotateY(var(--rotateY)); opacity: 1; }
+}
+
+/* ... (Semua CSS Anda dari sebelumnya: .dashboard-container, .main-header, .feature-card-interactive, keyframes, dll.) ... */
+
+/* === ATURAN RESPONSIVE === */
+
+/* Untuk Tablet (misal: lebar di bawah 992px) */
+@media (max-width: 992px) {
+  .main-header {
+    padding: 15px 20px; /* Kurangi padding header */
+  }
+  .main-title {
+    font-size: 22px; /* Perkecil judul */
+  }
+  .header-icon-btn {
+      width: 38px; /* Sedikit perkecil ikon header */
+      height: 38px;
+      font-size: 17px;
+  }
+  .feature-card-interactive {
+    width: 160px; /* Perkecil kartu */
+    min-height: 160px;
+    padding: 15px;
+  }
+  .feature-card-interactive img { /* Target img di dalam kartu */
+    width: 45px;
+    height: 45px;
+    margin-bottom: 8px;
+  }
+  .feature-card-interactive h3 { /* Target h3 di dalam kartu */
+    font-size: 16px;
+  }
+  .feature-card-interactive p { /* Target p di dalam kartu */
+    font-size: 13px;
+  }
+}
+
+/* Untuk Ponsel (misal: lebar di bawah 768px) */
+@media (max-width: 768px) {
+  .dashboard-container {
+      padding: 70px 15px 15px; /* Sesuaikan padding atas */
+      /* Hapus perspective jika tidak diinginkan di mobile */
+      /* perspective: none; */
+  }
+  .main-header {
+    padding: 10px 15px; /* Kurangi padding lagi */
+    /* Pusatkan judul jika ikon dipindah */
+    justify-content: center;
+  }
+  .main-title {
+    font-size: 20px;
+    /* Mungkin perlu absolute positioning jika ikon tumpang tindih */
+  }
+  .header-icons {
+     top: 10px; /* Atur ulang posisi ikon */
+     right: 10px;
+     gap: 10px;
+  }
+   .header-icon-btn {
+      width: 35px;
+      height: 35px;
+      font-size: 16px;
+  }
+  .feature-cards-area {
+      height: auto; /* Biarkan tinggi menyesuaikan */
+      padding-bottom: 30px;
+  }
+  .feature-card-interactive {
+    position: relative; /* Ubah ke relative agar mengalir normal */
+    width: 85%; /* Buat kartu lebih lebar */
+    max-width: 280px;
+    margin: 15px auto; /* Pusatkan dan beri jarak */
+    left: auto; top: auto; /* Hapus positioning absolut */
+    opacity: 1; /* Tampilkan langsung */
+    animation: none; /* Matikan animasi masuk & melayang */
+    transform: none !important; /* Hapus transform dari JS & CSS */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Sesuaikan bayangan */
+  }
+   .feature-card-interactive p {
+       line-height: 1.3; /* Rapatkan sedikit deskripsi */
+   }
+}
+
+/* Untuk Ponsel Sangat Kecil (misal: lebar di bawah 480px) */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 18px;
+    }
+    .feature-card-interactive {
+        width: 90%; /* Maksimalkan lebar */
+        min-height: 130px;
+        padding: 12px;
+    }
+     .feature-card-interactive img {
+        width: 30px;
+        height: 30px;
+    }
+     .feature-card-interactive h3 {
+        font-size: 15px;
+    }
+     .feature-card-interactive p {
+        font-size: 12px;
+    }
 }

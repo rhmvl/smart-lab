@@ -1,0 +1,279 @@
+/* Container Utama */
+.camera-container {
+  width: 100%;
+  height: 100vh;
+  position: relative; /* Penting agar elemen lain bisa menumpuk */
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* Video Feed Kamera */
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Uncomment jika ingin membalik kamera depan seperti cermin */
+  /* transform: scaleX(-1); */
+}
+
+/* Kanvas untuk Menggambar & Deteksi */
+.drawing-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  cursor: crosshair;
+}
+
+/* Tombol Balik Kamera */
+.flip-camera-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  padding: 10px 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* UI Pengukuran (Panel Bawah) */
+.main-ui-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  color: white;
+  z-index: 10;
+  padding: 15px;
+  box-sizing: border-box;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  font-family: Arial, sans-serif;
+  max-height: 50%; /* Batasi tinggi panel */
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column; /* Konten ditumpuk vertikal */
+}
+
+/* Tombol Pindah Mode */
+.mode-selector {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 15px;
+}
+.mode-selector button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1rem;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  border-radius: 6px;
+}
+.mode-selector button:hover {
+  color: white;
+}
+.mode-selector button.active {
+  color: #3498db; /* Warna biru untuk mode aktif */
+  font-weight: bold;
+  background-color: rgba(52, 152, 219, 0.1);
+}
+.mode-selector button:disabled {
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Bagian Pengukuran (Saat Mode Ukur Aktif) */
+.measurement-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.calibrate-box, .measure-box {
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.calibrate-box .measurement-title,
+.measure-box .measurement-title {
+  font-size: 1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 8px;
+}
+.calibrate-box p, .measure-box p {
+  font-size: 0.85rem;
+  color: #ccc;
+  text-align: center;
+  margin: 5px 0 10px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.input-group label { margin-right: 8px; font-size: 0.9rem; white-space: nowrap; }
+.input-group input { flex-grow: 1; padding: 6px; border-radius: 4px; border: none; min-width: 50px; background-color: #333; color: white; } /* Style input gelap */
+
+.calibrate-btn, .measure-box button {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  transition: background-color 0.2s ease;
+}
+.calibrate-btn:hover, .measure-box button:hover {
+    opacity: 0.9;
+}
+
+.measure-box button {
+  background-color: #555; /* Tombol lain warna abu */
+}
+.measure-box button:first-of-type { /* Tombol Simpan */
+  background-color: #28a745; /* Warna hijau */
+}
+
+
+.distance-readout { font-size: 0.8rem; color: #aaa; text-align: center; margin-top: 5px; }
+
+.measurement-result {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #f0e130;
+  text-align: center;
+  margin-bottom: 10px;
+  display: flex; /* Untuk menyejajarkan angka dan select */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.measurement-result select {
+  font-size: 1rem;
+  padding: 5px;
+  border-radius: 4px;
+  background-color: #333; /* Style select gelap */
+  color: white;
+  border: 1px solid #555;
+}
+
+/* Daftar Ukuran Tersimpan */
+.saved-measurements {
+  margin-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding-top: 15px;
+}
+.saved-measurements h4 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  text-align: center;
+  color: #ccc;
+}
+.saved-measurements ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 100px; /* Batasi tinggi daftar */
+  overflow-y: auto;
+}
+.saved-measurements li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+.saved-measurements button {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.saved-measurements button:hover {
+    background-color: #5a6268;
+}
+
+/* Pesan untuk mode lain */
+.main-ui-panel > p { /* Target <p> langsung di bawah panel */
+  text-align: center;
+  color: #ccc;
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* Popup Error */
+.error-popup {
+  position: absolute;
+  top: 80px; /* Di bawah tombol balik kamera */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff3b30;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  z-index: 11;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* Overlay Loading */
+.start-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  background-color: rgba(0, 0, 0, 0.7); /* Lebih gelap */
+  color: white;
+  text-align: center;
+}
+
+/* Style untuk Loading Spinner */
+.loading-spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

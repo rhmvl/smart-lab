@@ -1,0 +1,95 @@
+.settings-overlay {
+  position: fixed;
+  inset: 0; /* top, left, right, bottom: 0 */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 50; /* Di atas segalanya */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+}
+/* Style saat overlay muncul (dipicu oleh isOpen di React) */
+.settings-overlay {
+   /* Kita tidak butuh kelas 'open', karena komponen ini dirender kondisional */
+   /* Tampilkan saat dirender */
+   opacity: 1;
+   visibility: visible;
+   transition: opacity 0.3s ease, visibility 0s linear 0s;
+}
+
+.settings-panel {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+  transform: scale(0.95);
+  transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+/* Style saat panel muncul */
+.settings-overlay .settings-panel { /* Target panel di dalam overlay */
+   transform: scale(1);
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+.settings-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.close-settings-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #888;
+}
+
+.settings-body p {
+  margin: 0 0 10px;
+  font-weight: 500;
+}
+.theme-options {
+  display: flex;
+  gap: 10px;
+}
+.theme-btn {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f0f2f5;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.theme-btn:hover {
+  background-color: #e2e6ea;
+}
+.theme-btn.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
+
+/* Style Dark Mode (jika menggunakan kelas 'dark' di <html>) */
+.dark .settings-panel {
+    background-color: #2d3748; /* Warna gelap */
+    color: #e2e8f0; /* Warna teks terang */
+}
+.dark .settings-header { border-bottom-color: #4a5568; }
+.dark .settings-header h3 { color: #f7fafc; }
+.dark .close-settings-btn { color: #a0aec0; }
+.dark .theme-btn { background-color: #4a5568; border-color: #718096; color: #e2e8f0; }
+.dark .theme-btn:hover { background-color: #718096; }
+.dark .theme-btn.active { background-color: #4299e1; border-color: #4299e1; color: white; }

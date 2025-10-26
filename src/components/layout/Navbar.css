@@ -1,7 +1,48 @@
+/* Styling Navbar Dasar */
 .navbar {
   @apply fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 shadow-md;
+
+  /* State awal/tersembunyi */
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden; /* Tetap sembunyi */
+
+  /* Transisi Diperhalus:
+     - Transform (slide) lebih cepat saat menghilang.
+     - Opacity (fade) berjalan bersamaan.
+     - Visibility berubah setelah transisi selesai. */
+  transition:
+    transform 0.4s cubic-bezier(0.5, 0, 0.75, 0), /* Lebih cepat saat keluar */
+    opacity 0.3s ease-out,
+    visibility 0s linear 0.4s; /* Sembunyikan setelah 0.4s */
 }
 
+/* State Terlihat */
+.navbar-visible {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible; /* Tampilkan */
+
+  /* Transisi Muncul (lebih lambat/melenting) */
+  transition:
+    transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), /* Sedikit melenting */
+    opacity 0.4s ease-out,
+    visibility 0s linear 0s; /* Tampilkan segera */
+}
+
+/* State Tersembunyi (redundant tapi jelas, gunakan transisi dasar) */
+.navbar-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    /* Gunakan transisi dasar saat explicit hidden */
+     transition:
+        transform 0.4s cubic-bezier(0.5, 0, 0.75, 0),
+        opacity 0.3s ease-out,
+        visibility 0s linear 0.4s;
+}
+
+/* Styling Tombol Notes (Tetap sama) */
 .notes-button {
   @apply flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-full font-semibold shadow-md hover:from-indigo-600 hover:to-pink-600 transition-all cursor-pointer;
 }

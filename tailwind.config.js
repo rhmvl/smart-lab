@@ -5,5 +5,9 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,html}",
   ],
+  darkMode: 'class', // <--- AKTIFKAN INI
+  theme: {
+    extend: {},
+  },
   plugins: [],
 }

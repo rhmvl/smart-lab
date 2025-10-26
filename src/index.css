@@ -14,7 +14,21 @@
 /*  background-color: #f0f2f5;
 /*}
 /* src/index.css */
+/* Untuk browser WebKit (Chrome, Safari, Edge baru, Opera) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* atau width: 0; height: 0; */
+}
 
+/* Untuk Firefox */
+html, body {
+  scrollbar-width: none;
+}
+
+/* Untuk IE 10+ (jaga-jaga) */
+body {
+  -ms-overflow-style: none;
+}
 @theme {
   @keyframes float {
     from, to { transform: translateY(0px); }
@@ -41,19 +55,54 @@
   --animate-gradient: gradient 15s ease infinite;
   --animate-zero-gravity: zero-gravity 12s ease-in-out infinite;
 }
-
-
+/* Aturan dasar untuk html, body, #root (Overflow Diperbaiki) */
 html, body, #root {
   width: 100%;
   height: 100%;
-  overflow: scroll;
+  /* HAPUS atau UBAH 'overflow: scroll;' */
+  /* overflow: scroll; */ /* <-- Hapus baris ini */
+  /* ATAU ganti dengan auto jika body perlu scroll: */
+  /* overflow-y: auto; */
+  /* Jika scroll dihandle container dalam (misal .dashboard-container), */
+  /* maka hapus saja 'overflow' dari sini */
+  overflow: hidden; 
   margin: 0;
   padding: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.animated-background {
+/* Latar Belakang Gradien Animasi (Bisa di body atau #root) */
+body { /* Atau pindahkan ke #root jika #root container utama */
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradient-animation 15s ease infinite;
+  background-attachment: fixed; /* Agar background diam */
+}
+
+/* Pastikan keyframes gradient-animation didefinisikan (jika belum di @theme) */
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* src/index.css (Tambahkan ini) */
+
+.feature-scroll-container {
+  /* Ambil seluruh tinggi viewport */
+  height: 100vh;
+  /* Izinkan scroll vertikal HANYA di dalam container ini */
+  overflow-y: auto;
+  /* Beri padding agar konten tidak tertutup Navbar (jika Navbar fixed) */
+  /* Sesuaikan angka 16 ini (4rem * 4 = 64px) dengan tinggi Navbar Anda */
+  padding-top: 4rem; /* Contoh: 16 * 4px = 64px */
+  padding-bottom: 2rem; /* Jarak bawah */
+  box-sizing: border-box;
+
+  /* Sembunyikan scrollbar (jika aturan global belum cukup) */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE */
+}
+.feature-scroll-container::-webkit-scrollbar {
+  display: none; /* Webkit */
 }
