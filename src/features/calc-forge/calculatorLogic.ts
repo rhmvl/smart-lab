@@ -1,7 +1,6 @@
 import { registerTool } from "./calc-tool";
 
 const DECIMALS_PRECISION = 6;
-
 // Basic Arithmetic
 
 registerTool({
