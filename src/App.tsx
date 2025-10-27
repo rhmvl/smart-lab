@@ -46,7 +46,6 @@ const AppContent = () => {
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
-      <div className={isNavbarVisible ? "pt-16" : ""}>
         <Navbar setNotesOpen={setNotesOpen} />
         <Routes>
           {/* Berikan handleFeatureSelect DAN setNotesOpen ke Dashboard */}
@@ -58,7 +57,6 @@ const AppContent = () => {
           {/* <Route path={WEBSITE_URL} element={<Dashboard onSelectFeature={handleFeatureSelect} setNotesOpen={setNotesOpen} />} /> */}
           <Route path="*" element={<FeatureView title="404" description="Halaman tidak ditemukan." bgColor="bg-red-700" />} />
         </Routes>
-      </div>
       {/* Panel Catatan (Modal) */}
       <Notes isOpen={isNotesOpen} onClose={() => setNotesOpen(false)} />
 

@@ -1,45 +1,38 @@
 /* Styling Navbar Dasar */
 .navbar {
-  @apply fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 shadow-md;
+  /* Hapus 'left-0 right-0' agar tidak full width */
+  @apply fixed top-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200/30 dark:border-gray-700/30 shadow-lg; /* Tambah shadow lebih tebal */
 
-  /* State awal/tersembunyi */
-  transform: translateY(-100%);
+  /* === Tambahan untuk Efek Melayang & Lengkung === */
+  @apply top-4 left-1/2 -translate-x-1/2; /* Posisikan di tengah atas */
+  @apply rounded-xl; /* Sudut lebih melengkung */
+  @apply px-4 sm:px-6; /* Tambah padding berbeda untuk layar sm */
+
+  /* === UBAH LEBAR MAKSIMAL DI SINI === */
+  @apply w-auto max-w-[100%] md:max-w-[100%] lg:max-w-screen-lg xl:max-w-screen-xl; /* Lebar auto, dibatasi berbeda di tiap ukuran layar */
+  /* ============================================= */
+
+  /* State awal/tersembunyi untuk animasi */
+  transform: translateY(-150%); /* Mulai lebih jauh di atas */
   opacity: 0;
-  visibility: hidden; /* Tetap sembunyi */
-
-  /* Transisi Diperhalus:
-     - Transform (slide) lebih cepat saat menghilang.
-     - Opacity (fade) berjalan bersamaan.
-     - Visibility berubah setelah transisi selesai. */
-  transition:
-    transform 0.4s cubic-bezier(0.5, 0, 0.75, 0), /* Lebih cepat saat keluar */
-    opacity 0.3s ease-out,
-    visibility 0s linear 0.4s; /* Sembunyikan setelah 0.4s */
+  visibility: hidden;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out, visibility 0s linear 0.5s;
 }
 
 /* State Terlihat */
 .navbar-visible {
-  transform: translateY(0);
+  transform: translateY(0); /* Turun ke posisi normal (top-4) */
   opacity: 1;
-  visibility: visible; /* Tampilkan */
-
-  /* Transisi Muncul (lebih lambat/melenting) */
-  transition:
-    transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), /* Sedikit melenting */
-    opacity 0.4s ease-out,
-    visibility 0s linear 0s; /* Tampilkan segera */
+  visibility: visible;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease-out, visibility 0s linear 0s;
 }
 
-/* State Tersembunyi (redundant tapi jelas, gunakan transisi dasar) */
+/* State Tersembunyi (redundant tapi jelas) */
 .navbar-hidden {
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    /* Gunakan transisi dasar saat explicit hidden */
-     transition:
-        transform 0.4s cubic-bezier(0.5, 0, 0.75, 0),
-        opacity 0.3s ease-out,
-        visibility 0s linear 0.4s;
+  transform: translateY(-150%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.4s cubic-bezier(0.5, 0, 0.75, 0), opacity 0.3s ease-out, visibility 0s linear 0.4s;
 }
 
 /* Styling Tombol Notes (Tetap sama) */

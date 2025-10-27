@@ -32,12 +32,13 @@ export default function Navbar({ setNotesOpen }: NavbarProps) {
     // Terapkan kelas 'visible' atau 'hidden' berdasarkan state
     // Kelas 'navbar' tetap ada untuk style dasar
     <div className={`navbar ${isVisible ? 'navbar-visible' : 'navbar-hidden'}`}>
-      <div className="flex items-center justify-between py-3 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8"> {/* Tambah padding horizontal */}
-        {/* LOGO */}
-        <Link
-          to={WEBSITE_URL}
-          className="flex items-center space-x-2 group hover:opacity-90 transition-opacity"
-        >
+    {/* HAPUS '{' dari akhir baris di bawah ini */}
+    <div className="w-full flex items-center justify-between py-3 max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
+    {/* LOGO */}
+    <Link
+    to={WEBSITE_URL}
+    className="flex items-center space-x-2 group hover:opacity-90 transition-opacity"
+    >
           <span className="text-xl md:text-2xl font-extrabold text-gray-800 dark:text-white">
             Smart Lab
           </span>

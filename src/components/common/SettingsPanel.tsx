@@ -11,12 +11,16 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const [theme, setTheme] = useState(localStorage.getItem('smartlab-theme') || 'light');
 
   // Terapkan tema ke elemen <html> saat state berubah
-  useEffect(() => {
-    const root = window.document.documentElement;
-    root.classList.remove('light', 'dark'); // Hapus tema lama
-    root.classList.add(theme); // Tambahkan tema baru
-    localStorage.setItem('smartlab-theme', theme); // Simpan pilihan
-  }, [theme]);
+    useEffect(() => {
+      const root = window.document.documentElement; // Target <html>
+      root.classList.remove('light', 'dark'); // Hapus kelas lama
+      if (theme === 'dark') {
+        root.classList.add('dark'); // Tambahkan 'dark' jika tema gelap
+      } else {
+        root.classList.add('light'); // Atau 'light' jika terang
+      }
+      localStorage.setItem('smartlab-theme', theme);
+    }, [theme]);
 
   // Jika panel tidak terbuka, jangan render apa-apa
   if (!isOpen) {
