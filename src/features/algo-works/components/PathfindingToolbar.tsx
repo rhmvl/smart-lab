@@ -1,4 +1,3 @@
-
 import { useState, type ChangeEvent } from "react";
 import { eventBus } from "../../../utils/eventBus";
 import { Play, Camera, CameraOff, Grid, CircleDot, Square, Eraser } from "lucide-react";
@@ -14,7 +13,7 @@ const BLOCKS = [
   { value: "empty", label: "Eraser", icon: Eraser },
 ];
 
-export const Toolbar = () => {
+export const PathfindingToolbar = () => {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState(localStorage.getItem("path-algorithm") || ALGORITHMS[0].value);
   const [selectedBlock, setSelectedBlock] = useState(localStorage.getItem("block") || BLOCKS[0].value);
   const [cameraOn, setCameraOn] = useState(!!parseInt(localStorage.getItem('camera-update') || '0'));
@@ -49,11 +48,7 @@ export const Toolbar = () => {
   };
 
   return (
-    <div
-      className="
-        flex flex-wrap items-center gap-3 p-2 md:p-3
-              "
-    >
+    <div className="flex flex-wrap items-center gap-3 p-2 md:p-3">
       {/* Algorithm Selector */}
       <div className="flex items-center gap-2">
         <label htmlFor="algorithm-select" className="text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -1,213 +1,200 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
-import FeatureCard from './FeatureCard'; // Pastikan path ini benar
-import './Dashboard.css'; // Import CSS kustom
+import { useEffect, useState, useCallback } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
-import { FiClock, FiSearch, FiSettings } from 'react-icons/fi'; // Pastikan FiSettings ada
-import { type LucideIcon } from 'lucide-react'; // Impor LucideIcon (jika WEB_PAGE menggunakannya)
-import { WEB_PAGE } from '../../utils/config';
-import SettingsPanel from '../../components/common/SettingsPanel'; // Pastikan path ini benar
+import { Settings, Notebook, type LucideIcon } from "lucide-react";
+import FeatureCard from "./FeatureCard";
+import SettingsPanel from "../../components/common/SettingsPanel";
+import { WEB_PAGE } from "../../utils/config";
 
-// Interface props DIUBAH: Tambahkan setNotesOpen
 interface DashboardProps {
   onSelectFeature: (feature: string, icon: LucideIcon, color: string) => void;
-  setNotesOpen: (isOpen: boolean) => void; // Tambahkan prop ini
+  setNotesOpen: (isOpen: boolean) => void;
 }
 
-// Daftar nama animasi masuk (digunakan oleh CSS keyframes)
-const entryAnimations = [
-  'slide-in-from-bottom-left',
-'slide-in-from-top',
-'slide-in-from-right',
+const animationVars = [
+  "--animate-spin-card",
+  "--animate-breathe",
+  "--animate-zero-gravity",
+  "--animate-side-to-side",
+  "--animate-up-and-down",
+  "--animate-pendulum",
 ];
 
-// Daftar kelas animasi acak (nama kelas CSS yang menerapkan keyframes)
-const animationClasses = [
-  'animate-spin-card',
-'animate-breathe',
-'animate-zero-gravity',
-'animate-side-to-side',
-'animate-up-and-down',
-'animate-flicker',
-'animate-pendulum',
+const randomAnimations = () =>
+  [...animationVars].sort(() => Math.random() - 0.5).slice(0, 3);
+
+const cardPositions = [
+  { top: "20%", left: "15%" },
+  { top: "40%", left: "45%" },
+  { top: "20%", left: "70%" },
 ];
 
-// Fungsi untuk mendapatkan 3 animasi acak yang berbeda
-const getRandomAnimations = () => {
-  // Acak array kelas animasi
-  const shuffled = [...animationClasses].sort(() => 0.5 - Math.random());
-  // Ambil 3 kelas pertama dari hasil acak
-  return shuffled.slice(0, 3);
-};
-
-// Fungsi untuk menghasilkan posisi acak (Tetap sama)
-const generatePositions = () => [
-  // Kartu 1: Lebih ke atas
-  { top: '20%', left: '15%' }, // <-- Ubah dari 25%
-// Kartu 2: Lebih ke atas
-{ top: '40%', left: '40%' }, // <-- Ubah dari 45%
-// Kartu 3: Lebih ke atas
-{ top: '20%', left: '65%' }, // <-- Ubah dari 25%
-].sort(() => Math.random() - 0.5); // Acak array posisi
-
-
-// Komponen Dashboard Utama
-// === PERBAIKI: Terima setNotesOpen ===
-export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardProps){
-  const [positions] = useState(generatePositions());
+export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardProps) {
   const [init, setInit] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [cardAnimations, setCardAnimations] = useState<string[]>(getRandomAnimations());
 
-  // 1. useEffect untuk inisialisasi engine tsparticles
+  const [cardAnimations] = useState(randomAnimations);
+
   useEffect(() => {
-    initParticlesEngine(async (engine: any) => {
-      await loadSlim(engine); // Muat varian slim
-    }).then(() => {
-      setInit(true); // Tandai inisialisasi selesai
-    });
-  }, []); // Hanya dijalankan sekali saat mount
-
-  // 2. useEffect untuk mengubah animasi secara berkala
-  useEffect(() => {
-    // Fungsi untuk mendapatkan interval acak (5-7 detik)
-    const getRandomInterval = () => Math.random() * 2000 + 5000;
-
-    let intervalId: NodeJS.Timeout | undefined; // Simpan ID interval
-
-    // Fungsi untuk mengatur interval berikutnya
-    const scheduleNextAnimationChange = () => {
-      intervalId = setTimeout(() => {
-        setCardAnimations(getRandomAnimations()); // Ubah animasi
-        scheduleNextAnimationChange(); // Jadwalkan perubahan berikutnya
-      }, getRandomInterval());
-    };
-
-    // Mulai penjadwalan pertama
-    scheduleNextAnimationChange();
-
-    // Bersihkan interval saat komponen unmount
-    return () => {
-      if (intervalId) {
-        clearTimeout(intervalId);
-      }
-    };
-  }, []); // Hanya dijalankan sekali saat mount
-
-  // 3. useEffect untuk Efek Perspektif Mouse/Giroskop
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { innerWidth: width, innerHeight: height } = window;
-      const { clientX: x, clientY: y } = e;
-      const tiltX = (y / height - 0.5) * -1; // Dibalik agar terasa alami
-      const tiltY = (x / width - 0.5);
-      // Target elemen dengan kelas spesifik
-      document.querySelectorAll('.feature-card-interactive').forEach(card => {
-        const htmlCard = card as HTMLElement;
-        // Atur variabel CSS --rotateX dan --rotateY
-        htmlCard.style.setProperty('--rotateX', `${tiltX * 15}deg`);
-        htmlCard.style.setProperty('--rotateY', `${tiltY * 15}deg`);
-      });
-    };
-
-    // Implementasi handleDeviceOrientation jika diperlukan
-    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
-      const { beta, gamma } = e;
-      if (beta === null || gamma === null) return;
-      const tiltX = (beta / 90);
-      const tiltY = (gamma / 90);
-      document.querySelectorAll('.feature-card-interactive').forEach(card => {
-        const htmlCard = card as HTMLElement;
-        htmlCard.style.setProperty('--rotateX', `${tiltX * 15}deg`);
-        htmlCard.style.setProperty('--rotateY', `${tiltY * 15}deg`);
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('deviceorientation', handleDeviceOrientation); // Aktifkan jika perlu
-    // Fungsi cleanup
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('deviceorientation', handleDeviceOrientation);
-    };
-  }, []); // Hanya dijalankan sekali
-
-  // Opsi konfigurasi partikel (Pastikan struktur benar)
-  const particlesOptions = {
-    background: { color: { value: 'transparent' } },
-    fpsLimit: 60, // Perbaiki jika perlu
-    particles: {
-      number: { value: 80, density: { enable: true, value_area: 800 } }, // density opsional
-      color: { value: "#ffffff" },
-      shape: { type: "circle" },
-      opacity: { value: 0.5, random: true }, // random opsional
-      size: { value: 3, random: true }, // random opsional
-      line_linked: { enable: false },
-      move: { enable: true, speed: 1, direction: "bottom", random: false, straight: false, out_mode: "out", bounce: false }
-    }, // <-- Pastikan kurung kurawal ini ada
-    interactivity: { enable: false },
-    detectRetina: true,
-  };
-  const particlesLoaded = useCallback(async (container: any) => {
-    console.log("Particles loaded", container);
-    // Anda bisa melakukan sesuatu saat partikel siap jika perlu
+    initParticlesEngine(async (engine) => {
+      await loadSlim(engine);
+    }).then(() => setInit(true));
   }, []);
 
-  // Handlers ikon header
-  const handleSettingsClick = () => { setIsSettingsOpen(true); };
-  const handleSearchNotesClick = () => { setNotesOpen(true); };
+  /** Smooth 3D tilt effect — requestAnimationFrame optimized */
+  useEffect(() => {
+    let mouseX = 0;
+    let mouseY = 0;
+    let ticking = false;
 
-  // Tampilkan loading jika engine partikel belum siap
+    const updateTilt = () => {
+      document.querySelectorAll<HTMLElement>(".feature-card-interactive").forEach((el) => {
+        const xTilt = ((mouseY - window.innerHeight / 2) / 80).toFixed(2);
+        const yTilt = ((mouseX - window.innerWidth / 2) / 80).toFixed(2);
+        el.style.setProperty("--rotateX", `${-xTilt}deg`);
+        el.style.setProperty("--rotateY", `${yTilt}deg`);
+      });
+      ticking = false;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      if (!ticking) {
+        requestAnimationFrame(updateTilt);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  /** Particle setup */
+  const particlesOptions = {
+    background: { color: { value: "transparent" } },
+    fpsLimit: 60,
+    particles: {
+      number: { value: 60, density: { enable: true, value_area: 800 } },
+      color: { value: "#ffffff" },
+      shape: { type: "circle" },
+      opacity: { value: 0.5, random: true },
+      size: { value: 2, random: true },
+      links: { enable: false },
+      move: {
+        enable: true,
+        speed: 1,
+        direction: "bottom",
+        random: false,
+        straight: false,
+        outModes: "out",
+      },
+    },
+    interactivity: { events: {}, modes: {} },
+    detectRetina: true,
+  };
+
+  const particlesLoaded = useCallback((container: any) => {
+    console.log("Particles loaded:", container);
+  }, []);
+
   if (!init) {
-    return <div className="flex justify-center items-center min-h-screen text-white bg-gray-900">Memuat Efek Visual...</div>; // Tampilan loading
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
+        Getting Ready...
+      </div>
+    );
   }
 
-  // JSX Return
   return (
-    <div className="flex flex-col items-center justify-center p-8 pt-24 min-h-screen relative overflow-hidden dashboard-outer-container">
-    <Particles
-    id="tsparticles"
-    // @ts-ignore
-    options={particlesOptions} // Pastikan variabel 'particlesOptions' sudah didefinisikan di atas
-    particlesLoaded={particlesLoaded} // <-- Prop yang benar
-    className="absolute inset-0 z-0" // Posisi di belakang
-    />
-
-    {/* Komponen Header */}
-    <header className="main-header">
-    <h1 className="main-title">Smart Lab</h1>
-    <div className="header-icons">
-    <button onClick={handleSettingsClick} className="header-icon-btn" title="Pengaturan">
-    <FiSettings size={18} />
-    </button>
-    <button onClick={handleSearchNotesClick} className="header-icon-btn" title="Catatan">
-    <FiSearch size={18} />
-    </button>
-    </div>
-    </header>
-
-    <div className="dashboard-container">
-    {WEB_PAGE.map((feature, index) => (
-      <FeatureCard
-      key={feature.id}
-      icon={feature.icon}
-      title={feature.title}
-      description={feature.description}
-      color={feature.color}
-      onClick={() => onSelectFeature(feature.id, feature.icon, feature.color)}
-      style={{
-        ...positions[index],
-        // Hanya delay & variabel CSS
-        animationDelay: `${feature.delay || '0s'}`, // Hanya delay masuk
-        '--rotateX': '0deg',
-        '--rotateY': '0deg'
-      }}
-      // Teruskan kelas animasi acak
-      animationClass={cardAnimations[index % cardAnimations.length]}
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+      {/* Background Particles */}
+      <Particles
+        id="tsparticles"
+        // @ts-expect-error there is no error here.
+        options={particlesOptions}
+        particlesLoaded={particlesLoaded}
+        className="absolute inset-0 z-0"
       />
-    ))}
-    </div>
-    <SettingsPanel isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {/* Header */} 
+      <header
+        className="
+          fixed top-4 left-1/2 z-30
+          flex w-auto max-w-[95%] -translate-x-1/2 items-center justify-between
+          rounded-xl border px-6 py-3 shadow-lg backdrop-blur-md
+          bg-white/70 border-gray-200/30 text-gray-900
+          dark:bg-gray-900/60 dark:border-gray-700/40 dark:text-white
+          transition-all duration-300
+        "
+      >
+        {/* Title */}
+        <h1 className="text-2xl font-bold tracking-tight drop-shadow-sm select-none mr-6">
+          Smart Lab
+        </h1>
+
+        {/* Buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            title="Settings"
+            className="
+              flex h-10 w-10 items-center justify-center
+              rounded-full border text-gray-800 dark:text-gray-200
+              border-gray-300/40 dark:border-gray-700/50
+              bg-white/40 dark:bg-gray-800/40
+              shadow-sm backdrop-blur-sm
+              hover:scale-110 hover:rotate-6 hover:bg-white/60 hover:dark:bg-gray-700/60
+              transition-all duration-200 active:scale-95
+            "
+          >
+            <Settings size={18} />
+          </button>
+
+          <button
+            onClick={() => setNotesOpen(true)}
+            title="Notes"
+            className="
+              flex h-10 w-10 items-center justify-center
+              rounded-full border text-gray-800 dark:text-gray-200
+              border-gray-300/40 dark:border-gray-700/50
+              bg-white/40 dark:bg-gray-800/40
+              shadow-sm backdrop-blur-sm
+              hover:scale-110 hover:rotate-6 hover:bg-white/60 hover:dark:bg-gray-700/60
+              transition-all duration-200 active:scale-95
+            "
+          >
+            <Notebook size={18} />
+          </button>
+        </div>
+      </header>
+
+      {/* Feature Cards */}
+      <div className="relative z-10 w-full">
+        {WEB_PAGE.map((feature, index) => (
+          <FeatureCard
+            key={feature.id}
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description}
+            color={feature.color}
+            onClick={() => onSelectFeature(feature.id, feature.icon, feature.color)}
+            style={{
+              ...cardPositions[index],
+              animation: `var(${cardAnimations[index % cardAnimations.length]})`,
+              animationDelay: `${feature.delay || "0s"}`,
+              willChange: "transform, opacity",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Settings Panel */}
+      <SettingsPanel
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </div>
   );
 }
+
