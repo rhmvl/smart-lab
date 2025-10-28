@@ -12,11 +12,18 @@ export default function Navbar({ toggleNotesOpen, changeFeature }: NavbarProps) 
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
-
+  
   useEffect(() => {
-    const shouldBeVisible = location.pathname !== WEBSITE_URL;
+    const normalizePath = (path: string) =>
+      path.replace(/\/+$/, "").replace(/\/{2,}/g, "/"); // remove trailing + duplicate slashes
+
+    const normalizedCurrent = normalizePath(location.pathname);
+    const normalizedHome = normalizePath(WEBSITE_URL);
+
+    const shouldBeVisible = normalizedCurrent !== normalizedHome;
     setIsVisible(shouldBeVisible);
   }, [location.pathname]);
+
 
   return (
     <>

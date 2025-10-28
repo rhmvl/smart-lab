@@ -1,48 +1,37 @@
-// src/features/calc-forge/CalcForgeDesktop.tsx
-import React, { useState, useMemo } from 'react';
-import { getAllTools, type ToolDefinition, runTool } from './calc-tool'; // Impor runTool juga jika expression editor dipakai
+import { useState, useMemo } from 'react';
+import { getAllTools, type ToolDefinition } from './calc-tool'; 
 import NormalCalculator from './NormalCalculator';
 import { SlidersHorizontal, Calculator as CalculatorIcon } from 'lucide-react';
 
 export default function CalcForgeDesktop() {
-  // === HANYA SATU BLOK DEKLARASI STATE ===
-  const [viewMode, setViewMode] = useState<'formula' | 'normal'>('formula'); // State mode tampilan
+  const [viewMode, setViewMode] = useState<'formula' | 'normal'>('formula');
   const allTools = useMemo(() => getAllTools(), []);
-  const [selectedCategory, setSelectedCategory] = useState<any>( // Tipe 'any' sementara, bisa diperbaiki
-  allTools.find(t => t.category)?.category || allTools[0]?.category || 'Basic'
+  const [selectedCategory, setSelectedCategory] = useState<string>( 
+    allTools.find(t => t.category)?.category || allTools[0]?.category || 'Basic'
   );
   const [selectedFormula, setSelectedFormula] = useState<ToolDefinition | null>(
-    // Cari alat pertama dalam kategori default
     allTools.find(f => f.category === selectedCategory) || allTools[0] || null
   );
-  const [inputValues, setInputValues] = useState<Record<string, string>>({}); // Simpan input sebagai string
-  const [result, setResult] = useState<number | string | null>(null);
-  // =======================================
-  // State untuk expression editor (jika ingin menggabungkan dengan mode normal)
-  // const [expression, setExpression] = useState("");
-  // const [history, setHistory] = useState<{ expr: string; res: string | number | boolean }[]>([]);
+  const [inputValues, setInputValues] = useState<Record<string, string>>({}); 
+  const [result, setResult] = useState<number | string | boolean | null>(null);
 
-  // --- Handler Input Mode Rumus ---
   const handleInputChange = (paramName: string, value: string) => {
     setInputValues(prev => ({ ...prev, [paramName]: value }));
-    setResult(null); // Reset hasil saat input diubah
+    setResult(null);
   };
 
-  // --- Handler Hitung Mode Rumus ---
   const calculateResult = () => {
     if (!selectedFormula) return;
 
     const numericInputs: Record<string, number> = {};
     let allInputsValid = true;
-    let missingParams: string[] = []; // Lacak parameter yang kosong
+    const missingParams: string[] = [];
 
     // Validasi dan konversi input
     for (const param of selectedFormula.params) {
       const valueString = inputValues[param.name];
-      // Anggap input kosong = tidak valid, kecuali ada defaultValue
       if (valueString === undefined || valueString.trim() === '') {
         if (param.defaultValue !== undefined) {
-          // Jika ada default, gunakan itu (pastikan tipenya number jika perlu)
           const defaultValueNum = typeof param.defaultValue === 'string' ? parseFloat(param.defaultValue) : (param.defaultValue as number);
           if (isNaN(defaultValueNum)) {
             allInputsValid = false;
@@ -54,7 +43,7 @@ export default function CalcForgeDesktop() {
           allInputsValid = false;
           missingParams.push(param.label || param.name);
         }
-        continue; // Lanjut ke parameter berikutnya
+        continue;
       }
 
       const value = parseFloat(valueString);
@@ -65,44 +54,36 @@ export default function CalcForgeDesktop() {
       numericInputs[param.name] = value;
     }
 
-    // Jika ada input tidak valid/kosong
     if (!allInputsValid) {
       setResult(`Input tidak valid atau kosong untuk: ${missingParams.join(', ')}`);
       return;
     }
 
-    // Lakukan perhitungan
     try {
-      // Ambil argumen sesuai urutan 'params'
       const argsInOrder = selectedFormula.params.map(p => numericInputs[p.name]);
       const calculationResult = selectedFormula.execute(...argsInOrder);
       setResult(calculationResult);
     } catch (error) {
       console.error("Calculation error:", error);
-      // Tampilkan pesan error yang lebih informatif jika memungkinkan
       setResult(error instanceof Error ? `Error: ${error.message}` : 'Error perhitungan');
     }
   };
 
-
-  // --- Filter & Kategori ---
   const filteredFormulas = useMemo(() =>
-  allTools.filter(f => f.category === selectedCategory),
-                                   [selectedCategory, allTools]
+    allTools.filter(f => f.category === selectedCategory), [selectedCategory, allTools]
   );
   const categories = useMemo(() =>
-  [...new Set(allTools.map(t => t.category || 'Lainnya'))]
-  .sort((a,b) => a === 'Basic' ? -1 : b === 'Basic' ? 1 : a.localeCompare(b)),
-                             [allTools]
+    [...new Set(allTools.map(t => t.category || 'Lainnya'))]
+    .sort((a,b) => a === 'Basic' ? -1 : b === 'Basic' ? 1 : a.localeCompare(b)),
+    [allTools]
   );
   const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category as any);
+    setSelectedCategory(category);
     setSelectedFormula(allTools.find(f => f.category === category) || null);
     setInputValues({}); setResult(null);
   };
 
   return (
-    // Container utama
     <div className="relative flex w-full max-w-6xl mx-auto my-16 mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden h-[70vh]">
 
     {/* Tombol Toggle Mode */}

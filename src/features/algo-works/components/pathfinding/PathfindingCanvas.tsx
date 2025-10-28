@@ -1,20 +1,20 @@
 import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
 import { Application, extend, useApplication, useTick } from "@pixi/react";
-import { Cell, type CellState } from "../../../types/cell.ts";
-import { COLORS } from "../../../utils/colors.ts";
-import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
-import { eventBus } from "../../../utils/eventBus.ts";
-import { aStar } from "../algorithms/pathfinding/astar.ts";
-import { getOrCreateGrid } from "../../../utils/gridStore.ts";
+import { Cell, type CellState } from "../../../../types/cell.ts";
+import { COLORS } from "../../../../utils/colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../../../utils/config.ts";
+import { eventBus } from "../../../../utils/eventBus.ts";
+import { aStar } from "../../algorithms/pathfinding/astar.ts";
+import { getOrCreateGrid } from "../../../../utils/gridStore.ts";
 
 extend({Container, Graphics});
 
 // TODO: The grid is not loaded when changing the page.
+// TODO: Maybe improve the visualizer
 export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: number, viewportHeight: number }) => {
   const gridRef = useRef<Cell[][]>(getOrCreateGrid());
   const grid = gridRef.current;
-  useApplication();
   const getCamUpdate = () => !!parseInt(localStorage.getItem("camera-update") || '0');
 
   // FOR CAMERA
@@ -127,16 +127,18 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
     lastPos.current = { x: currentX, y: currentY };
   }, [minX, maxX, minY, maxY]);
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      updateVisual();
-    }, 0); // allow Pixi to mount first
-    return () => clearTimeout(timeout);
-  }, [grid]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     updateVisual();
+  //   }, 0);
+  //   return () => clearTimeout(timeout);
+  // }, []);
 
   useEffect(() => {
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
+
+    updateVisual();
 
     eventBus.on("toggle_run", offRun);
     window.addEventListener("pointerup", handleUp);
@@ -211,7 +213,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   );
 }
 
-export const Grid = memo(() => {
+export const PathfindingCanvas = memo(() => {
   const [size, setSize] = useState({ 
     width: window.innerWidth, 
     height: window.innerHeight 
