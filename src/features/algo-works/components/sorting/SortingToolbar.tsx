@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { eventBus } from "../../../../utils/eventBus";
-import { Play, RotateCcw, Camera, CameraOff } from "lucide-react";
+import { Play, RotateCcw } from "lucide-react";
 
 const ALGORITHMS = [
   { value: "bubble", label: "Bubble Sort" },
