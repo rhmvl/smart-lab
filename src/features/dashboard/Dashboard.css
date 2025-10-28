@@ -1,7 +1,7 @@
 @reference "tailwindcss";
 
 .dashboard-outer-container {
-  @apply relative w-full min-h-screen overflow-x-hidden box-border perspective-[1000px] 
+  @apply relative w-full min-h-screen overflow-x-hidden box-border perspective-[1000px]
 }
 
 .main-header {
@@ -30,17 +30,55 @@
   @apply relative w-full min-h-screen pt-24 z-[5] box-border;
 }
 
+/* Kartu Fitur Interaktif - Definisi Utama */
 .feature-card-interactive {
-  @apply absolute opacity-0 w-[180px] min-h-[180px] p-5 rounded-2xl shadow-lg 
-  flex flex-col justify-center items-center text-center bg-white/90 text-gray-800 cursor-pointer 
-  transition-transform ease-out duration-200;
+  @apply absolute opacity-0 w-[180px] min-h-[220px] /* Tinggi sudah diubah */
+  p-5 rounded-2xl
+  flex flex-col justify-center items-center text-center bg-white/90 text-gray-800 cursor-pointer;
+
+  /* Efek 3D Sederhana */
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-bottom: 4px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1),
+  inset 0 1px 1px rgba(255, 255, 255, 0.3),
+  inset 0 -1px 1px rgba(0, 0, 0, 0.05);
+
+  /* Variabel CSS & Transform Awal */
+  --rotateX: 0deg;
+  --rotateY: 0deg;
+  transform: rotateX(var(--rotateX)) rotateY(var(--rotateY));
+
+  /* Transisi */
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.3s ease, opacity 0.3s ease;
 }
 
+/* Dark Mode - Definisi Utama */
 .dark .feature-card-interactive {
-  @apply bg-gray-800/80 text-gray-100 border border-gray-700/70;
+  @apply bg-gray-800/80 text-gray-100; /* Warna dasar dark mode */
+  border: 1px solid rgba(75, 85, 99, 0.5); /* Border atas/samping gelap */
+  border-bottom: 4px solid rgba(0, 0, 0, 0.3); /* Border bawah lebih gelap */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2), /* Shadow utama gelap */
+  inset 0 1px 1px rgba(255, 255, 255, 0.1), /* Highlight redup */
+  inset 0 -1px 1px rgba(0, 0, 0, 0.15); /* Shadow inset gelap */
 }
+/* Pastikan teks deskripsi dark mode juga diatur */
 .dark .feature-card-interactive p {
   @apply text-gray-300;
+}
+
+
+/* Hover State (Hanya Satu Definisi) */
+.feature-card-interactive:hover {
+  @apply translate-y-[-8px] scale-105 shadow-[0_12px_25px_rgba(0,0,0,0.2),0_0_20px_var(--glow-color)]; /* Shadow lebih kuat */
+  /* Transform hover + perspektif */
+  transform: translateY(-8px) scale(1.05) rotateX(var(--rotateX)) rotateY(var(--rotateY));
+  border-bottom-color: rgba(0, 0, 0, 0.25); /* Gelapkan border bawah */
+  /* Hentikan animasi melayang saat hover (jika animasi diterapkan via CSS) */
+  /* animation-play-state: running, paused !important; */
+}
+/* Hover State Dark Mode (Hanya Satu Definisi) */
+.dark .feature-card-interactive:hover {
+  border-bottom-color: rgba(0, 0, 0, 0.4); /* Gelapkan border bawah lebih lanjut */
 }
 
 .card-content-wrapper {

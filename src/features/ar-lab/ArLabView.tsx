@@ -5,19 +5,29 @@ import './ArMeasure.css'; // Impor CSS Anda
 import type { MeasurementUnit } from './types'; // Impor tipe
 
 export default function ArLabView() {
-    // Panggil hook untuk mendapatkan semua state dan fungsi
     const logic = useArLabLogic();
 
     return (
         <div className="camera-container">
-            {/* Video dan Canvas menggunakan ref dari hook */}
-            <video ref={logic.videoRef} className="camera-feed" autoPlay playsInline muted></video>
-            <canvas ref={logic.canvasRef} className="drawing-canvas"
-                style={{ pointerEvents: logic.detectionMode === 'measure' ? 'auto' : 'none' }}
-                // Pasang event handler dari hook
-                onMouseDown={logic.handleDrawStart} onMouseMove={logic.handleDrawMove} onMouseUp={logic.handleDrawEnd}
-                onTouchStart={logic.handleDrawStart} onTouchMove={logic.handleDrawMove} onTouchEnd={logic.handleDrawEnd}
-            ></canvas>
+        {/* Tambahkan kelas 'flipped' jika facingMode adalah 'user' */}
+        <video
+        ref={logic.videoRef}
+        className={`camera-feed ${logic.facingMode === 'user' ? 'flipped' : ''}`}
+        autoPlay
+        playsInline
+        muted
+        ></video>
+        <canvas
+        ref={logic.canvasRef}
+        className={`drawing-canvas ${logic.facingMode === 'user' ? 'flipped' : ''}`}
+        style={{ pointerEvents: logic.detectionMode === 'measure' ? 'auto' : 'none' }}
+        onMouseDown={logic.handleDrawStart}
+        onMouseMove={logic.handleDrawMove}
+        onMouseUp={logic.handleDrawEnd}
+        onTouchStart={logic.handleDrawStart}
+        onTouchMove={logic.handleDrawMove}
+        onTouchEnd={logic.handleDrawEnd}
+        ></canvas>
 
             {/* Tombol Balik Kamera */}
             {logic.streamActive && ( <button className="flip-camera-btn" onClick={logic.flipCamera}>🔄</button> )}

@@ -117,7 +117,7 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
         className="absolute inset-0 z-0"
       />
 
-      {/* Header */} 
+      {/* Header */}
       <header
         className="
           fixed top-4 left-1/2 z-30

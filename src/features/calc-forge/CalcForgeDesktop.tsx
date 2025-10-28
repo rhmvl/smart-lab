@@ -1,18 +1,15 @@
 // src/features/calc-forge/CalcForgeDesktop.tsx
 import React, { useState, useMemo } from 'react';
-// Impor fungsi dan tipe dari calc-tool.ts
-import { getAllTools, type ToolDefinition } from './calc-tool';
-// Impor CSS jika Anda membuatnya (opsional jika hanya pakai Tailwind)
-// import './CalcForgeDesktop.css';
+import { getAllTools, type ToolDefinition, runTool } from './calc-tool'; // Impor runTool juga jika expression editor dipakai
+import NormalCalculator from './NormalCalculator';
+import { SlidersHorizontal, Calculator as CalculatorIcon } from 'lucide-react';
 
 export default function CalcForgeDesktop() {
-  // Ambil semua alat/rumus saat komponen dimuat
+  // === HANYA SATU BLOK DEKLARASI STATE ===
+  const [viewMode, setViewMode] = useState<'formula' | 'normal'>('formula'); // State mode tampilan
   const allTools = useMemo(() => getAllTools(), []);
-
-  // State untuk mengelola UI
-  const [selectedCategory, setSelectedCategory] = useState<'Fisika' | 'Kimia' | 'Basic' | 'Geometry' | 'Mathematics'>(
-    // Coba cari kategori pertama yang ada alatnya, fallback ke 'Basic' atau kategori pertama
-    allTools.find(t => t.category)?.category || allTools[0]?.category || 'Basic'
+  const [selectedCategory, setSelectedCategory] = useState<any>( // Tipe 'any' sementara, bisa diperbaiki
+  allTools.find(t => t.category)?.category || allTools[0]?.category || 'Basic'
   );
   const [selectedFormula, setSelectedFormula] = useState<ToolDefinition | null>(
     // Cari alat pertama dalam kategori default
@@ -20,14 +17,18 @@ export default function CalcForgeDesktop() {
   );
   const [inputValues, setInputValues] = useState<Record<string, string>>({}); // Simpan input sebagai string
   const [result, setResult] = useState<number | string | null>(null);
+  // =======================================
+  // State untuk expression editor (jika ingin menggabungkan dengan mode normal)
+  // const [expression, setExpression] = useState("");
+  // const [history, setHistory] = useState<{ expr: string; res: string | number | boolean }[]>([]);
 
-  // Handler saat nilai input berubah
+  // --- Handler Input Mode Rumus ---
   const handleInputChange = (paramName: string, value: string) => {
     setInputValues(prev => ({ ...prev, [paramName]: value }));
     setResult(null); // Reset hasil saat input diubah
   };
 
-  // Handler saat tombol "Hitung" diklik
+  // --- Handler Hitung Mode Rumus ---
   const calculateResult = () => {
     if (!selectedFormula) return;
 
@@ -42,10 +43,12 @@ export default function CalcForgeDesktop() {
       if (valueString === undefined || valueString.trim() === '') {
         if (param.defaultValue !== undefined) {
           // Jika ada default, gunakan itu (pastikan tipenya number jika perlu)
-          numericInputs[param.name] = typeof param.defaultValue === 'string' ? parseFloat(param.defaultValue) : (param.defaultValue as number);
-          if (isNaN(numericInputs[param.name])) {
+          const defaultValueNum = typeof param.defaultValue === 'string' ? parseFloat(param.defaultValue) : (param.defaultValue as number);
+          if (isNaN(defaultValueNum)) {
             allInputsValid = false;
             missingParams.push(param.label || param.name);
+          } else {
+            numericInputs[param.name] = defaultValueNum;
           }
         } else {
           allInputsValid = false;
@@ -81,72 +84,89 @@ export default function CalcForgeDesktop() {
     }
   };
 
-  // Filter rumus berdasarkan kategori terpilih
+
+  // --- Filter & Kategori ---
   const filteredFormulas = useMemo(() =>
   allTools.filter(f => f.category === selectedCategory),
                                    [selectedCategory, allTools]
   );
-
-  // Dapatkan daftar kategori unik dari alat yang ada
   const categories = useMemo(() =>
   [...new Set(allTools.map(t => t.category || 'Lainnya'))]
-  .sort((a,b) => a === 'Basic' ? -1 : b === 'Basic' ? 1 : a.localeCompare(b)), // Urutkan, Basic di depan
+  .sort((a,b) => a === 'Basic' ? -1 : b === 'Basic' ? 1 : a.localeCompare(b)),
                              [allTools]
   );
-
-  // Handler saat kategori diubah
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category as any);
-    // Pilih otomatis rumus pertama di kategori baru
     setSelectedFormula(allTools.find(f => f.category === category) || null);
-    setInputValues({}); // Reset input
-    setResult(null);    // Reset hasil
+    setInputValues({}); setResult(null);
   };
 
   return (
     // Container utama
-    <div className="flex w-full max-w-6xl mx-auto my-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden h-[70vh]">
+    <div className="relative flex w-full max-w-6xl mx-auto my-16 mb-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden h-[70vh]">
 
-    {/* === KOLOM KIRI: PEMILIHAN RUMUS === */}
-    <div className="w-2/5 lg:w-1/3 bg-gray-50 dark:bg-gray-700 p-4 border-r border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden">
-    <h2 className="text-lg lg:text-xl font-semibold mb-3 text-center text-gray-800 dark:text-gray-100 flex-shrink-0">Pilih Rumus</h2>
-    {/* Tab Kategori */}
-    <div className="flex-shrink-0 mb-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
-    <div className="flex w-max rounded-md border border-gray-300 dark:border-gray-500 overflow-hidden">
-    {categories.map(category => (
-      <button
-      key={category}
-      onClick={() => handleCategoryChange(category)}
-      className={`flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${selectedCategory === category ? 'bg-indigo-600 text-white shadow-inner' : 'bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500'}`}
-      >
-      {category}
-      </button>
-    ))}
+    {/* Tombol Toggle Mode */}
+    <button
+    onClick={() => setViewMode(prev => prev === 'formula' ? 'normal' : 'formula')}
+    className="absolute top-4 right-4 z-10 p-2 bg-gray-100 dark:bg-gray-600 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 transition shadow-sm"
+    title={viewMode === 'formula' ? 'Ganti ke Kalkulator Normal' : 'Ganti ke Mode Rumus'}
+    >
+    {viewMode === 'formula' ? <CalculatorIcon size={18} /> : <SlidersHorizontal size={18} />}
+    </button>
+
+    {/* === KOLOM KIRI: PEMILIHAN RUMUS / KONTROL === */}
+    <div className={`w-2/5 lg:w-1/3 bg-gray-50 dark:bg-gray-700 p-4 border-r border-gray-200 dark:border-gray-600 flex flex-col overflow-hidden transition-all duration-300 ${viewMode === 'normal' ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+    <div className="flex justify-between items-center mb-3 flex-shrink-0">
+    <h2 className="text-lg lg:text-xl font-semibold text-gray-800 dark:text-gray-100">
+    {viewMode === 'formula' ? 'Pilih Rumus' : 'Mode Rumus'}
+    </h2>
     </div>
-    </div>
-    {/* Daftar Rumus */}
-    <ul className="flex-1 overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-700">
-    {filteredFormulas.map(formula => (
-      <li
-      key={formula.id}
-      className={`block w-full text-left p-3 rounded cursor-pointer transition text-sm ${selectedFormula?.id === formula.id ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
-      onClick={() => { setSelectedFormula(formula); setInputValues({}); setResult(null); }}
-      >
-      {formula.name}
-      </li>
-    ))}
-    {filteredFormulas.length === 0 && (
-      <p className="text-center text-gray-500 dark:text-gray-400 text-sm mt-4">Tidak ada rumus di kategori ini.</p>
+    {viewMode === 'formula' ? (
+      <>
+      {/* Tab Kategori */}
+      <div className="flex-shrink-0 mb-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-800">
+      <div className="flex w-max rounded-md border border-gray-300 dark:border-gray-500 overflow-hidden">
+      {categories.map(category => (
+        <button
+        key={category}
+        onClick={() => handleCategoryChange(category)}
+        className={`flex-1 py-2 px-3 text-xs sm:text-sm font-medium transition whitespace-nowrap ${selectedCategory === category ? 'bg-indigo-600 text-white shadow-inner' : 'bg-white dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-500'}`}
+        >
+        {category}
+        </button>
+      ))}
+      </div>
+      </div>
+      {/* Daftar Rumus */}
+      <ul className="flex-1 overflow-y-auto space-y-1 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 dark:scrollbar-thumb-gray-600 dark:scrollbar-track-gray-700">
+      {filteredFormulas.map(formula => (
+        <li
+        key={formula.id}
+        className={`block w-full text-left p-3 rounded cursor-pointer transition text-sm ${selectedFormula?.id === formula.id ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600'}`}
+        onClick={() => { setSelectedFormula(formula); setInputValues({}); setResult(null); }}
+        >
+        {formula.name}
+        </li>
+      ))}
+      {filteredFormulas.length === 0 && (
+        <p className="text-center text-gray-500 dark:text-gray-400 text-sm mt-4">Tidak ada rumus di kategori ini.</p>
+      )}
+      </ul>
+      </>
+    ) : (
+      <div className="flex-1 flex items-center justify-center text-gray-400 dark:text-gray-500 text-center px-4">
+      <p>Ganti ke Mode Rumus untuk memilih formula spesifik.</p>
+      </div>
     )}
-    </ul>
     </div>
 
-    {/* === KOLOM KANAN: KALKULATOR AKTIF === */}
-    <div className="w-3/5 lg:w-2/3 p-6 flex flex-col overflow-hidden">
+    {/* === KOLOM KANAN: TAMPILAN UTAMA (KONDISIONAL) === */}
+    <div className="w-3/5 lg:w-2/3 p-6 flex flex-col overflow-hidden relative">
+    {/* Tampilan Mode Rumus */}
+    <div className={`absolute inset-0 p-6 flex flex-col transition-opacity duration-300 ease-in-out ${viewMode === 'formula' ? 'opacity-100 z-[1]' : 'opacity-0 z-0 pointer-events-none'}`}>
     {selectedFormula ? (
       <>
       <h3 className="text-xl lg:text-2xl font-bold mb-2 text-center text-indigo-700 dark:text-indigo-400 flex-shrink-0">{selectedFormula.name}</h3>
-      {/* Deskripsi/Rumus */}
       {selectedFormula.description && (
         <p className="text-sm text-center bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 p-2 rounded mb-4 flex-shrink-0">
         {selectedFormula.description}
@@ -160,13 +180,12 @@ export default function CalcForgeDesktop() {
         {variable.label || variable.name}:
         </label>
         <input
-        type={variable.type === 'number' ? 'number' : 'text'} // Sesuaikan tipe input
+        type={variable.type === 'number' ? 'number' : 'text'}
         id={variable.name}
         placeholder={variable.unit || ''}
         value={inputValues[variable.name] || ''}
         onChange={(e) => handleInputChange(variable.name, e.target.value)}
         className="w-full sm:flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        // Tambahkan step="any" untuk desimal jika perlu
         step={variable.type === 'number' ? "any" : undefined}
         />
         </div>
@@ -177,7 +196,7 @@ export default function CalcForgeDesktop() {
       <button
       className="w-full sm:w-auto mx-auto block bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-8 rounded-lg transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
       onClick={calculateResult}
-      disabled={!selectedFormula || selectedFormula.params.length === 0} // Disable jika tidak ada parameter
+      disabled={!selectedFormula || selectedFormula.params.length === 0}
       >
       Hitung
       </button>
@@ -185,16 +204,22 @@ export default function CalcForgeDesktop() {
         <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center border border-gray-200 dark:border-gray-600">
         <h4 className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Hasil:</h4>
         <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 break-words">
-        {typeof result === 'number' ? result.toLocaleString(undefined, { maximumFractionDigits: 6 }) : result} {/* Format angka */}
-        {/* (Logika unit hasil perlu disesuaikan jika execute mengembalikan unit) */}
+        {typeof result === 'number' ? result.toLocaleString(undefined, { maximumFractionDigits: 6 }) : result}
         </p>
         </div>
       )}
       </div>
       </>
     ) : (
-      <p className="text-center text-gray-500 dark:text-gray-400 mt-10">Pilih rumus dari daftar di sebelah kiri.</p>
+      <p className="text-center text-gray-500 dark:text-gray-400 mt-10">Pilih rumus dari daftar.</p>
     )}
+    </div>
+
+    {/* Tampilan Mode Kalkulator Normal */}
+    <div className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${viewMode === 'normal' ? 'opacity-100 z-[1]' : 'opacity-0 z-0 pointer-events-none'}`}>
+    {/* Pastikan NormalCalculator dirender di sini */}
+    <NormalCalculator />
+    </div>
     </div>
     </div>
   );

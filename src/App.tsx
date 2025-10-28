@@ -50,7 +50,7 @@ const AppContent = () => {
         <Routes>
           {/* Berikan handleFeatureSelect DAN setNotesOpen ke Dashboard */}
           <Route path={WEBSITE_URL} element={<Dashboard onSelectFeature={handleFeatureSelect} setNotesOpen={setNotesOpen} />} />
-          <Route path={`${WEBSITE_URL}/algo-works`} element={<AlgoWorks />} />
+          <Route path={`${WEBSITE_URL}/algo-works/*`} element={<AlgoWorks />} />
           <Route path={`${WEBSITE_URL}/calc-forge`} element={<CalcForge />} />
           <Route path={`${WEBSITE_URL}/ar-lab`} element={<ArLab />} />
           {/* HAPUS Route duplikat untuk Dashboard di bawah ini */}

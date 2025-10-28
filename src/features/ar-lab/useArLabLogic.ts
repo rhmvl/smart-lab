@@ -2,14 +2,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { HandLandmarker, FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 import { getCoords, drawHandLandmarks, drawFaceDetections, convertDistance } from './arLabUtils';
+// Hapus impor TensorFlow.js jika Anda tidak jadi menggunakannya
+// import * as tf from '@tensorflow/tfjs';
 
 // Tipe data
 export type Point = { x: number; y: number };
 export type FacingMode = 'environment' | 'user';
-export type DetectionMode = 'measure' | 'hand' | 'face';
+export type DetectionMode = 'measure' | 'hand' | 'face' | 'age'; // Tambah mode 'age'
 export type MeasurementUnit = 'cm' | 'mm' | 'm' | 'inch' | 'ft';
 
 // Variabel global
+// let ageModel: tf.GraphModel | undefined = undefined; // Model umur
 let handLandmarker: HandLandmarker | undefined = undefined;
 let faceDetector: FaceDetector | undefined = undefined;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -28,6 +31,7 @@ export function useArLabLogic() {
     const [modelsReady, setModelsReady] = useState(false);
     const [loadingStatus, setLoadingStatus] = useState('Menginisialisasi...');
     const [detectionMode, setDetectionMode] = useState<DetectionMode>('measure');
+    const [detectedAge, setDetectedAge] = useState<number | null>(null); // State untuk umur
 
     // State Pengukuran & Kalibrasi
     const [measureMode, setMeasureMode] = useState<'calibrate' | 'measure'>('calibrate');
@@ -64,6 +68,11 @@ export function useArLabLogic() {
             });
             console.log("Model deteksi wajah berhasil dimuat.");
 
+            // Tambahkan pemuatan model umur di sini jika sudah siap
+            // setLoadingStatus('Memuat model Deteksi Umur...');
+            // ageModel = await tf.loadGraphModel('URL_MODEL_ANDA/model.json');
+            // console.log("Model deteksi umur berhasil dimuat.");
+
             setLoadingStatus('Model siap!');
             setModelsReady(true);
         } catch (err) {
@@ -76,8 +85,10 @@ export function useArLabLogic() {
     const startCamera = useCallback(async () => {
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
-            if (requestPredictionFrame) cancelAnimationFrame(requestPredictionFrame);
-            requestPredictionFrame = undefined;
+            if (requestPredictionFrame) {
+                cancelAnimationFrame(requestPredictionFrame);
+                requestPredictionFrame = undefined;
+            }
         }
         setErrorMsg(''); setStreamActive(false); console.log(`Mencoba memulai kamera: ${facingMode}`);
         try {
@@ -90,21 +101,21 @@ export function useArLabLogic() {
             });
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
-                videoRef.current.onloadedmetadata = () => { // Gunakan event ini
-                    videoRef.current?.play().catch(playErr => { // Tambahkan catch error untuk play
+                videoRef.current.onloadedmetadata = () => {
+                    videoRef.current?.play().catch(playErr => {
                         console.error("Gagal memulai play video:", playErr);
                         setErrorMsg("Gagal memulai video. Coba lagi.");
                     });
                     streamRef.current = stream;
                     setStreamActive(true);
                     console.log("Stream kamera aktif.");
-                    if (modelsReady && !requestPredictionFrame) { // Mulai prediksi jika model siap & loop belum jalan
+                    if (modelsReady && !requestPredictionFrame) {
                         console.log("Memulai loop prediksi...");
-                        lastVideoTime = -1; // Reset lastVideoTime saat kamera baru dimulai
+                        lastVideoTime = -1;
                         predictWebcam();
                     }
                 };
-                videoRef.current.onerror = (e) => { // Tambahkan error handler untuk video
+                videoRef.current.onerror = (e) => {
                     console.error("Video error:", e);
                     setErrorMsg("Terjadi masalah saat memutar video kamera.");
                 };
@@ -118,13 +129,33 @@ export function useArLabLogic() {
                 else setErrorMsg(`Gagal memulai kamera (${err.name}).`);
             } else setErrorMsg("Gagal memulai kamera.");
         }
-    }, [facingMode, modelsReady]); // predictWebcam tidak perlu di dependensi startCamera
+    }, [facingMode, modelsReady]); // dependensi predictWebcam dihapus
+
+    // --- FUNGSI ESTIMASI UMUR (Placeholder, aktifkan jika model umur ada) ---
+    const runAgeEstimation = useCallback(async (video: HTMLVideoElement, bbox: any, ctx: CanvasRenderingContext2D) => {
+        // if (!ageModel) {
+        //      ctx.fillStyle = 'red'; ctx.font = '18px Arial'; ctx.textAlign = 'center';
+        //      ctx.fillText("Model Umur Belum Dimuat", bbox.originX + bbox.width / 2, bbox.originY - 30);
+        //      return;
+        // }
+        // try {
+        //     const videoTensor = tf.browser.fromPixels(video);
+        //     const faceTensor = videoTensor.slice([bbox.originY, bbox.originX, 0], [bbox.height, bbox.width, 3]);
+        //     const inputTensor = tf.image.resizeBilinear(faceTensor, [128, 128]).div(tf.scalar(255)).expandDims(0);
+        //     const prediction = ageModel.predict(inputTensor) as tf.Tensor;
+        //     const estimatedAge = (await prediction.data())[0];
+        //     setDetectedAge(estimatedAge);
+        //     ctx.fillStyle = 'yellow'; ctx.font = '20px Arial'; ctx.textAlign = 'center';
+        //     ctx.fillText(`Estimasi Umur: ${Math.round(estimatedAge)}`, bbox.originX + bbox.width / 2, bbox.originY - 10);
+        //     videoTensor.dispose(); faceTensor.dispose(); inputTensor.dispose(); prediction.dispose();
+        // } catch (err) { console.error("Error estimasi umur:", err); }
+    }, []); // Dependensi kosong
 
     // --- LOOP PREDIKSI MEDIAPIPE & MENGGAMBAR ---
     const predictWebcam = useCallback(() => {
         const video = videoRef.current;
         const canvas = canvasRef.current;
-        if (!video || !canvas || !streamActive || video.readyState < video.HAVE_METADATA || video.paused || video.ended || video.videoWidth === 0) {
+        if (!video || !canvas || !streamActive || video.readyState < 2 || video.videoWidth === 0) {
             requestPredictionFrame = requestAnimationFrame(predictWebcam); return;
         }
         if (video.currentTime === lastVideoTime) {
@@ -134,41 +165,42 @@ export function useArLabLogic() {
         const ctx = canvas.getContext('2d');
         if (!ctx) { requestPredictionFrame = requestAnimationFrame(predictWebcam); return; }
 
-        canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Deteksi sesuai mode
         if (modelsReady) {
-            try { // Tambahkan try-catch untuk deteksi
+            try {
                 if (detectionMode === 'hand' && handLandmarker) {
                     const handResults = handLandmarker.detectForVideo(video, Date.now());
                     drawHandLandmarks(ctx, handResults.landmarks, canvas.width, canvas.height);
                 } else if (detectionMode === 'face' && faceDetector) {
                     const faceResults = faceDetector.detectForVideo(video, Date.now());
                     drawFaceDetections(ctx, faceResults.detections);
+                } else if (detectionMode === 'age' && faceDetector) {
+                    const faceResults = faceDetector.detectForVideo(video, Date.now());
+                    drawFaceDetections(ctx, faceResults.detections);
+                    if (faceResults.detections.length > 0) {
+                        const bbox = faceResults.detections[0].boundingBox;
+                        // Panggil estimasi umur (masih placeholder)
+                        // runAgeEstimation(video, bbox, ctx);
+                    }
+                } else if (detectionMode === 'measure' && startPoint && endPoint) {
+                    const scaleX = canvas.width / video.clientWidth;
+                    const scaleY = canvas.height / video.clientHeight;
+                    const scaledStart = { x: startPoint.x * scaleX, y: startPoint.y * scaleY };
+                    const scaledEnd = { x: endPoint.x * scaleX, y: endPoint.y * scaleY };
+                    ctx.beginPath(); ctx.moveTo(scaledStart.x, scaledStart.y); ctx.lineTo(scaledEnd.x, scaledEnd.y);
+                    ctx.strokeStyle = 'yellow'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke();
+                    ctx.fillStyle = 'red'; ctx.beginPath(); ctx.arc(scaledStart.x, scaledStart.y, 8, 0, 2 * Math.PI); ctx.fill();
+                    ctx.fillStyle = 'blue'; ctx.beginPath(); ctx.arc(scaledEnd.x, scaledEnd.y, 8, 0, 2 * Math.PI); ctx.fill();
                 }
             } catch (detectionError) {
-                console.error("Error saat deteksi:", detectionError);
-                // Mungkin tampilkan pesan error singkat ke user
+                console.error("Error saat deteksi/gambar:", detectionError);
             }
         }
-
-        // Gambar garis pengukuran
-        if (detectionMode === 'measure' && startPoint && endPoint) {
-            // Skalakan koordinat dari ukuran tampilan (clientWidth/Height) ke ukuran asli canvas (width/height)
-            const scaleX = canvas.width / video.clientWidth;
-            const scaleY = canvas.height / video.clientHeight;
-            const scaledStart = { x: startPoint.x * scaleX, y: startPoint.y * scaleY };
-            const scaledEnd = { x: endPoint.x * scaleX, y: endPoint.y * scaleY };
-
-            ctx.beginPath(); ctx.moveTo(scaledStart.x, scaledStart.y); ctx.lineTo(scaledEnd.x, scaledEnd.y);
-            ctx.strokeStyle = 'yellow'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.stroke(); // Tambah lineCap
-            ctx.fillStyle = 'red'; ctx.beginPath(); ctx.arc(scaledStart.x, scaledStart.y, 8, 0, 2 * Math.PI); ctx.fill();
-            ctx.fillStyle = 'blue'; ctx.beginPath(); ctx.arc(scaledEnd.x, scaledEnd.y, 8, 0, 2 * Math.PI); ctx.fill();
-        }
-
         requestPredictionFrame = requestAnimationFrame(predictWebcam);
-    }, [streamActive, modelsReady, detectionMode, startPoint, endPoint]); // Dependensi sudah benar
+    }, [streamActive, modelsReady, detectionMode, startPoint, endPoint, runAgeEstimation]); // Dependensi sudah benar
 
     // --- useEffect UTAMA ---
     useEffect(() => { setupModels(); }, [setupModels]);
@@ -177,13 +209,12 @@ export function useArLabLogic() {
         return () => { // Kode cleanup
             if (streamRef.current) {
                 streamRef.current.getTracks().forEach(track => track.stop());
-                streamRef.current = null; // Reset ref
+                streamRef.current = null;
             }
             if (requestPredictionFrame) {
                 cancelAnimationFrame(requestPredictionFrame);
                 requestPredictionFrame = undefined;
             }
-            // Hapus event listener video saat unmount
             if(videoRef.current) {
                 videoRef.current.onloadedmetadata = null;
                 videoRef.current.onerror = null;
@@ -201,7 +232,7 @@ export function useArLabLogic() {
         setFacingMode(prevMode => (prevMode === 'user' ? 'environment' : 'user'));
         setStartPoint(null); setEndPoint(null); setPixelDistance(0);
         setMeasureMode('calibrate'); setPixelsPerUnit(null); setSavedMeasurements([]);
-    }, []); // Tidak ada dependensi
+    }, []);
 
     const handleDrawStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
         if (detectionMode !== 'measure') return; e.preventDefault(); setIsDrawing(true);
@@ -215,14 +246,16 @@ export function useArLabLogic() {
 
     const handleDrawEnd = useCallback(() => {
         if (!isDrawing || !startPoint || !endPoint || detectionMode !== 'measure') return; setIsDrawing(false);
-        // Hitung jarak piksel di layar (bukan piksel video asli) agar konsisten
+        // Hitung jarak piksel di layar
         const rect = canvasRef.current!.getBoundingClientRect();
-        const clientDx = (endPoint.x / (canvasRef.current!.width / rect.width)) - (startPoint.x / (canvasRef.current!.width / rect.width));
-        const clientDy = (endPoint.y / (canvasRef.current!.height / rect.height)) - (startPoint.y / (canvasRef.current!.height / rect.height));
-        const clientDist = Math.sqrt(clientDx * clientDx + clientDy * clientDy);
-
-        setPixelDistance(clientDist); // Gunakan jarak piksel layar
+        const scaleX = canvasRef.current!.width / rect.width;
+        const scaleY = canvasRef.current!.height / rect.height;
+        const dx = (endPoint.x - startPoint.x) * scaleX; // Gunakan koordinat canvas yang diskalakan
+        const dy = (endPoint.y - startPoint.y) * scaleY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        setPixelDistance(dist); // Jarak dalam piksel video/canvas asli
     }, [isDrawing, startPoint, endPoint, detectionMode]);
+
 
     const handleCalibrate = useCallback(() => {
         if (pixelDistance === 0) {
@@ -232,19 +265,18 @@ export function useArLabLogic() {
         if (isNaN(lengthInCm) || lengthInCm <= 0) {
             setErrorMsg("Masukkan panjang referensi yang valid dalam cm."); return;
         }
-        // Rasio piksel (di layar) per cm (di dunia nyata)
+        // Rasio piksel (video/canvas asli) per cm (dunia nyata)
         setPixelsPerUnit(pixelDistance / lengthInCm);
         setMeasureMode('measure'); setErrorMsg(''); setPixelDistance(0); setStartPoint(null); setEndPoint(null);
     }, [pixelDistance, knownLength]);
 
     const saveCurrentMeasurement = useCallback(() => {
-        const valueToSave = convertDistance(pixelDistance, pixelsPerUnit, currentUnit); // Gunakan utilitas
+        const valueToSave = convertDistance(pixelDistance, pixelsPerUnit, currentUnit);
         if (valueToSave > 0) {
             setSavedMeasurements(prev => [valueToSave, ...prev.slice(0, 4)]);
         }
-        // Reset setelah menyimpan? Opsional
         setPixelDistance(0); setStartPoint(null); setEndPoint(null);
-    }, [pixelDistance, pixelsPerUnit, currentUnit]); // convertDistance tidak perlu jadi dependensi
+    }, [pixelDistance, pixelsPerUnit, currentUnit]);
 
     const sendToCalculator = useCallback((measurement: number) => {
         alert(`Mengirim ${measurement.toFixed(2)} ${currentUnit} ke Kalkulator (fitur belum aktif)`);
@@ -254,9 +286,9 @@ export function useArLabLogic() {
     return {
         videoRef, canvasRef, errorMsg, streamActive, facingMode, modelsReady, loadingStatus,
         detectionMode, measureMode, pixelsPerUnit, knownLength, currentUnit, savedMeasurements,
-        pixelDistance, startPoint, endPoint, // Kembalikan state gambar
-        flipCamera, setDetectionMode, setMeasureMode, // Kembalikan setter
+        pixelDistance, startPoint, endPoint, detectedAge,
+        flipCamera, setDetectionMode, setMeasureMode,
         setKnownLength, handleCalibrate, setCurrentUnit, saveCurrentMeasurement, sendToCalculator,
-        handleDrawStart, handleDrawMove, handleDrawEnd, convertDistance // Kembalikan handler & utilitas
+        handleDrawStart, handleDrawMove, handleDrawEnd, convertDistance
     };
 }

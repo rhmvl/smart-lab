@@ -1,5 +1,5 @@
 // ALL THE LOGIC ARE PLACED ON calculatorLogic.ts
-export type CALCULATOR_CATEGORY = "Basic" | "Mathematics" | "Geometry" | "Physics";
+export type CALCULATOR_CATEGORY = "Basic" | "Mathematics" | "Geometry" | "Physics" | "Kimia";
 
 export interface ToolParam {
   name: string; 
