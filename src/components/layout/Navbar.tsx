@@ -48,7 +48,7 @@ export default function Navbar({ toggleNotesOpen, changeFeature }: NavbarProps) 
           {/* === Navigation Links === */}
           <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 flex-1 justify-center">
             <button
-              onClick={() => changeFeature(`..${WEBSITE_URL}`, FlaskConicalIcon, "")}
+              onClick={() => changeFeature(`..${WEBSITE_URL}`, FlaskConicalIcon, "#6366F1")}
               className={
                 `flex items-center gap-2 text-sm font-semibold transition-all duration-200 whitespace-nowrap
                 text-gray-700 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400`
