@@ -1,5 +1,5 @@
-// ALL THE LOGIC ARE PLACED ON calculatorLogic.ts
 export type CALCULATOR_CATEGORY = "Basic" | "Mathematics" | "Geometry" | "Physics" | "Kimia";
+export const DECIMALS_PRECISION = 6;
 
 export interface ToolParam {
   name: string; 

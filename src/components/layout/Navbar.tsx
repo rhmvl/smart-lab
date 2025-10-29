@@ -1,4 +1,4 @@
-import { Notebook, Menu, X, type LucideIcon, FlaskConicalIcon } from "lucide-react";
+import { Notebook, Menu, X, type LucideIcon, FlaskConicalIcon, Settings } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { WEBSITE_URL, WEB_PAGE } from "../../utils/config";
@@ -6,9 +6,10 @@ import { WEBSITE_URL, WEB_PAGE } from "../../utils/config";
 interface NavbarProps {
   toggleNotesOpen: () => void;
   changeFeature: (featurePath: string, icon: LucideIcon, color: string) => void;
+  setSettingsOpen: (isOpen: boolean) => void; 
 }
 
-export default function Navbar({ toggleNotesOpen, changeFeature }: NavbarProps) {
+export default function Navbar({ toggleNotesOpen, changeFeature, setSettingsOpen }: NavbarProps) {
   const location = useLocation();
   const [isVisible, setIsVisible] = useState(false);
   const [navVisible, setNavVisible] = useState(true);
@@ -56,14 +57,13 @@ export default function Navbar({ toggleNotesOpen, changeFeature }: NavbarProps) 
           <nav className="flex flex-wrap items-center gap-4 sm:gap-6 md:gap-8 flex-1 justify-center">
             <button
               onClick={() => changeFeature(`..${WEBSITE_URL}`, FlaskConicalIcon, "#6366F1")}
-              className={
-                `flex items-center gap-2 text-sm font-semibold transition-all duration-200 whitespace-nowrap
-                text-gray-700 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400`
-              }
+              className="flex items-center gap-2 text-sm font-semibold transition-all duration-200 whitespace-nowrap
+                         text-gray-700 dark:text-gray-300 hover:text-indigo-500 dark:hover:text-indigo-400"
             >
               <FlaskConicalIcon className="w-4 h-4" />
               <span>Dashboard</span>
             </button>
+
             {WEB_PAGE.map((page) => {
               const isActive =
                 location.pathname === page.path ||
@@ -101,6 +101,23 @@ export default function Navbar({ toggleNotesOpen, changeFeature }: NavbarProps) 
             >
               <Notebook className="w-5 h-5" />
               <span className="hidden sm:inline">Notes</span>
+            </button>
+
+            {/* Settings Button (new) */}
+            <button
+              onClick={() => setSettingsOpen(true)}
+              title="Settings"
+              className="
+                flex h-10 w-10 items-center justify-center
+                rounded-full border text-gray-800 dark:text-gray-200
+                border-gray-300/40 dark:border-gray-700/50
+                bg-white/40 dark:bg-gray-800/40
+                shadow-sm backdrop-blur-sm
+                hover:scale-110 hover:rotate-6 hover:bg-white/60 hover:dark:bg-gray-700/60
+                transition-all duration-200 active:scale-95
+              "
+            >
+              <Settings size={18} />
             </button>
 
             {/* Hide Navbar Button */}

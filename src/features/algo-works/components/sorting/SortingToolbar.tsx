@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent } from "react";
 import { eventBus } from "../../../../utils/eventBus";
-import { Play, RotateCcw } from "lucide-react";
+import { Play, RotateCcw, Square } from "lucide-react";
 
 const ALGORITHMS = [
   { value: "bubble", label: "Bubble Sort" },
@@ -18,6 +18,7 @@ export const SortingToolbar = () => {
     Number(localStorage.getItem("array-size")) || 50
   );
   const [delay, setDelay] = useState(Number(localStorage.getItem("sort-delay")) || 50);
+  const [isSorting, setIsSorting] = useState(false);
 
   const handleAlgorithmChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
@@ -38,8 +39,25 @@ export const SortingToolbar = () => {
     localStorage.setItem("sort-delay", value.toString());
   };
 
-  const runSort = () => eventBus.emit("run_sort");
-  const resetArray = () => eventBus.emit("generate_array");
+  const runSort = () => {
+    if (isSorting) return;
+    setIsSorting(true);
+    eventBus.emit("run_sort");
+
+    // When sorting ends, the canvas will emit a stop internally.
+    // We will auto-reset the UI after a delay.
+    setTimeout(() => setIsSorting(false), 200);
+  };
+
+  const resetArray = () => {
+    setIsSorting(false);
+    eventBus.emit("generate_array");
+  };
+
+  const stopSort = () => {
+    setIsSorting(false);
+    eventBus.emit("stop_sort");
+  };
 
   return (
     <div
@@ -91,6 +109,7 @@ export const SortingToolbar = () => {
           step="10"
           value={arraySize}
           onChange={handleArraySizeChange}
+          disabled={isSorting}
           className="w-24 cursor-pointer accent-indigo-500"
         />
         <span className="text-xs text-gray-600 dark:text-gray-400 w-8 text-center">
@@ -110,6 +129,7 @@ export const SortingToolbar = () => {
           step="10"
           value={delay}
           onChange={handleDelayChange}
+          disabled={isSorting}
           className="w-24 cursor-pointer accent-indigo-500"
         />
         <span className="text-xs text-gray-600 dark:text-gray-400 w-8 text-center">
@@ -120,32 +140,50 @@ export const SortingToolbar = () => {
       {/* Reset Button */}
       <button
         onClick={resetArray}
-        className="
+        disabled={isSorting}
+        className={`
           inline-flex items-center gap-2 px-3 py-2 rounded-md
+          ${isSorting ? "opacity-60 cursor-not-allowed" : ""}
           bg-gray-200/70 hover:bg-gray-300/80
           dark:bg-gray-700/70 dark:hover:bg-gray-600
           text-gray-800 dark:text-gray-100 font-medium transition shadow-sm
           active:scale-[0.97]
-        "
+        `}
       >
         <RotateCcw className="w-4 h-4" />
         <span>Reset</span>
       </button>
 
-      {/* Run Button */}
-      <button
-        onClick={runSort}
-        className="
-          inline-flex items-center gap-2 px-4 py-2 rounded-md
-          bg-gradient-to-r from-indigo-500 to-pink-500 
-          hover:from-indigo-600 hover:to-pink-600
-          text-white font-semibold transition shadow
-          active:scale-[0.97]
-        "
-      >
-        <Play className="w-4 h-4" />
-        <span>Run</span>
-      </button>
+      {/* Run / Stop Button */}
+      {isSorting ? (
+        <button
+          onClick={stopSort}
+          className="
+            inline-flex items-center gap-2 px-4 py-2 rounded-md
+            bg-gradient-to-r from-rose-500 to-orange-500
+            hover:from-rose-600 hover:to-orange-600
+            text-white font-semibold transition shadow
+            active:scale-[0.97]
+          "
+        >
+          <Square className="w-4 h-4" />
+          <span>Stop</span>
+        </button>
+      ) : (
+        <button
+          onClick={runSort}
+          className="
+            inline-flex items-center gap-2 px-4 py-2 rounded-md
+            bg-gradient-to-r from-indigo-500 to-pink-500 
+            hover:from-indigo-600 hover:to-pink-600
+            text-white font-semibold transition shadow
+            active:scale-[0.97]
+          "
+        >
+          <Play className="w-4 h-4" />
+          <span>Run</span>
+        </button>
+      )}
     </div>
   );
 };

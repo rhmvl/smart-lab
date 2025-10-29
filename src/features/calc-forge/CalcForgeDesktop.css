@@ -1,9 +1,0 @@
-/* Di CalcForgeDesktop.css atau index.css */
-.transition-opacity {
-  transition: opacity 0.3s ease-in-out;
-}
-.opacity-0 { opacity: 0; }
-.opacity-100 { opacity: 1; }
-.absolute { position: absolute; }
-.inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-.pointer-events-none { pointer-events: none; }

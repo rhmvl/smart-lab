@@ -1,14 +1,13 @@
-import { useEffect, useState, useCallback } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
+import { useEffect, useState, useMemo } from "react";
 import { Settings, Notebook, type LucideIcon } from "lucide-react";
-import FeatureCard from "./FeatureCard";
-import SettingsPanel from "../../components/common/SettingsPanel";
+import FeatureCard from './FeatureCard';
+import './Dashboard.css';
 import { WEB_PAGE } from "../../utils/config";
 
 interface DashboardProps {
   onSelectFeature: (feature: string, icon: LucideIcon, color: string) => void;
   setNotesOpen: (isOpen: boolean) => void;
+  setSettingsOpen: (isOpen: boolean) => void
 }
 
 const animationVars = [
@@ -18,30 +17,22 @@ const animationVars = [
   "--animate-side-to-side",
   "--animate-up-and-down",
   "--animate-pendulum",
+  "animate-flicker", // Flicker sebagai loop
 ];
 
 const randomAnimations = () =>
   [...animationVars].sort(() => Math.random() - 0.5).slice(0, 3);
 
 const cardPositions = [
-  { top: "20%", left: "15%" },
-  { top: "40%", left: "45%" },
+  { top: "20%", left: "16%" },
+  { top: "40%", left: "44%" },
   { top: "20%", left: "70%" },
 ];
 
-export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardProps) {
-  const [init, setInit] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+export default function Dashboard({ onSelectFeature, setNotesOpen, setSettingsOpen }: DashboardProps) {
+  const [cardAnimations, setCardAnimations] = useState<string[]>([]);
+  const initialRandomAnimations = useMemo(() => randomAnimations(), []);
 
-  const [cardAnimations] = useState(randomAnimations);
-
-  useEffect(() => {
-    initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => setInit(true));
-  }, []);
-
-  /** Smooth 3D tilt effect — requestAnimationFrame optimized */
   useEffect(() => {
     let mouseX = 0;
     let mouseY = 0;
@@ -70,53 +61,23 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  /** Particle setup */
-  const particlesOptions = {
-    background: { color: { value: "transparent" } },
-    fpsLimit: 60,
-    particles: {
-      number: { value: 60, density: { enable: true, value_area: 800 } },
-      color: { value: "#ffffff" },
-      shape: { type: "circle" },
-      opacity: { value: 0.5, random: true },
-      size: { value: 2, random: true },
-      links: { enable: false },
-      move: {
-        enable: true,
-        speed: 1,
-        direction: "bottom",
-        random: false,
-        straight: false,
-        outModes: "out",
-      },
-    },
-    interactivity: { events: {}, modes: {} },
-    detectRetina: true,
-  };
+  useEffect(() => {
+    const startLoopTimer = setTimeout(() => {
+      setCardAnimations(initialRandomAnimations);
+    }, 1000);
 
-  const particlesLoaded = useCallback((container: any) => {
-    console.log("Particles loaded:", container);
-  }, []);
+    const changeLoopInterval = setInterval(() => {
+      setCardAnimations(randomAnimations());
+    }, Math.random() * 2000 + 5000); // 5-7 detik
 
-  if (!init) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white">
-        Getting Ready...
-      </div>
-    );
-  }
+    return () => {
+      clearTimeout(startLoopTimer);
+      clearInterval(changeLoopInterval);
+    };
+  }, [initialRandomAnimations]);
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
-      {/* Background Particles */}
-      <Particles
-        id="tsparticles"
-        // @ts-expect-error there is no error here.
-        options={particlesOptions}
-        particlesLoaded={particlesLoaded}
-        className="absolute inset-0 z-0"
-      />
-
       {/* Header */}
       <header
         className="
@@ -136,7 +97,7 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
         {/* Buttons */}
         <div className="flex gap-3">
           <button
-            onClick={() => setIsSettingsOpen(true)}
+            onClick={() => setSettingsOpen(true)}
             title="Settings"
             className="
               flex h-10 w-10 items-center justify-center
@@ -182,18 +143,14 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
             style={{
               ...cardPositions[index],
               animation: `var(${cardAnimations[index % cardAnimations.length]})`,
-              animationDelay: `${feature.delay || "0s"}`,
+              'animationDelay': `${feature.delay || "0s"}`,
               willChange: "transform, opacity",
+              '--rotateX': '0deg',
+              '--rotateY': '0deg'
             }}
           />
         ))}
       </div>
-
-      {/* Settings Panel */}
-      <SettingsPanel
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
     </div>
   );
 }

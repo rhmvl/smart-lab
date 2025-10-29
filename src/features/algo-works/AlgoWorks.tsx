@@ -1,10 +1,12 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { ArrowLeft, BarChart, Network } from "lucide-react";
-import { PathfindingToolbar } from "./components/pathfinding/PathfindingToolbar";
+// import AlgoChallenge from './AlgoChallenge';
 import { PathfindingCanvas } from "./components/pathfinding/PathfindingCanvas";
 import { PathfindingTutorialPopup } from "./components/pathfinding/TutorialPopup";
 import { SortingCanvas } from "./components/sorting/SortingCanvas";
 import { SortingToolbar } from "./components/sorting/SortingToolbar";
+import { PathfindingToolbar } from "./components/pathfinding/PathfindingToolbar";
+import { SortingTutorialPopup } from "./components/sorting/TutorialPopup";
 
 const algorithmOptions = [
   {
@@ -25,7 +27,7 @@ const algorithmOptions = [
     icon: BarChart,
     component: SortingCanvas,
     toolbar: SortingToolbar,
-    tutorialPopup: () => <></>,
+    tutorialPopup: SortingTutorialPopup,
   },
 ];
 

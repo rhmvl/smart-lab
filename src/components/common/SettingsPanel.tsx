@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import './SettingsPanel.css'; // Buat file CSS untuk styling
+import { useTheme } from '../../utils/useTheme';
 
 interface SettingsPanelProps {
   isOpen: boolean;
@@ -7,53 +6,80 @@ interface SettingsPanelProps {
 }
 
 export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
-  // Ambil tema tersimpan atau default ke 'light'
-  const [theme, setTheme] = useState(localStorage.getItem('smartlab-theme') || 'light');
+  const { theme, setTheme } = useTheme();
 
-  // Terapkan tema ke elemen <html> saat state berubah
-    useEffect(() => {
-      const root = window.document.documentElement; // Target <html>
-      root.classList.remove('light', 'dark'); // Hapus kelas lama
-      if (theme === 'dark') {
-        root.classList.add('dark'); // Tambahkan 'dark' jika tema gelap
-      } else {
-        root.classList.add('light'); // Atau 'light' jika terang
-      }
-      localStorage.setItem('smartlab-theme', theme);
-    }, [theme]);
-
-  // Jika panel tidak terbuka, jangan render apa-apa
-  if (!isOpen) {
-    return null;
-  }
+  if (!isOpen) return null;
 
   return (
-    <div className="settings-overlay" onClick={onClose}> {/* Overlay untuk menutup saat klik di luar */}
-      <div className="settings-panel" onClick={(e) => e.stopPropagation()}> {/* Panel agar klik di dalam tidak menutup */}
-        <div className="settings-header">
-          <h3>Pengaturan Tampilan</h3>
-          <button onClick={onClose} className="close-settings-btn">×</button>
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
+    >
+      {/* Prevent click inside from closing */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-xl shadow-2xl w-[90%] max-w-md transform transition-all duration-300 scale-100 p-6 border border-white/20 dark:border-gray-700"
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-3 mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            Looks
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-2xl leading-none"
+          >
+            ×
+          </button>
         </div>
-        <div className="settings-body">
-          <p>Pilih Tema:</p>
-          <div className="theme-options">
+
+        {/* Theme Selector */}
+        <div className="space-y-3">
+          <p className="font-medium text-gray-700 dark:text-gray-300">Pilih Tema:</p>
+          <div className="flex gap-3">
             <button
               onClick={() => setTheme('light')}
-              className={`theme-btn ${theme === 'light' ? 'active' : ''}`}
+              className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all
+                ${theme === 'light'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
             >
-              Terang
+              Light
             </button>
+
             <button
               onClick={() => setTheme('dark')}
-              className={`theme-btn ${theme === 'dark' ? 'active' : ''}`}
+              className={`flex-1 py-2 px-3 rounded-lg border text-sm font-medium transition-all
+                ${theme === 'dark'
+                  ? 'bg-blue-600 text-white border-blue-600'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
             >
-              Gelap
+              Dark
             </button>
-             {/* Anda bisa menambahkan opsi 'System' jika Tailwind dikonfigurasi */}
-             {/* <button onClick={() => setTheme('system')}>System</button> */}
           </div>
         </div>
+
+        {/*
+        <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-4">
+          <p className="font-medium text-gray-700 dark:text-gray-300 mb-3">Audio:</p>
+          <div className="flex justify-between items-center mb-3">
+            <label className="text-gray-700 dark:text-gray-300 font-medium">Musik Latar (BGM)</label>
+            <button className="py-1 px-4 rounded-md text-sm font-semibold border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+              OFF
+            </button>
+          </div>
+          <div className="flex justify-between items-center">
+            <label className="text-gray-700 dark:text-gray-300 font-medium">Efek Suara (SFX)</label>
+            <button className="py-1 px-4 rounded-md text-sm font-semibold border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+              OFF
+            </button>
+          </div>
+        </div>
+        */}
       </div>
     </div>
   );
 }
+

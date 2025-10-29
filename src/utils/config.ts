@@ -1,9 +1,8 @@
 import { CpuIcon, CalculatorIcon, FlaskRoundIcon } from "lucide-react";
 
-// TODO: Use localStorage
-export const ROWS = 30
-export const COLS = 30
-export const CELL_SIZE = 50
+export const ROWS = 80;
+export const COLS = 80;
+export const CELL_SIZE = 50;
 
 export const WEBSITE_URL = "/smart-lab";
 

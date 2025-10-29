@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
-import { Application, extend, useApplication, useTick } from "@pixi/react";
+import { Application, extend, useTick } from "@pixi/react";
 import { Cell, type CellState } from "../../../../types/cell.ts";
 import { COLORS } from "../../../../utils/colors.ts";
 import { CELL_SIZE, COLS, ROWS } from "../../../../utils/config.ts";
@@ -127,13 +127,6 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
     lastPos.current = { x: currentX, y: currentY };
   }, [minX, maxX, minY, maxY]);
 
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-  //     updateVisual();
-  //   }, 0);
-  //   return () => clearTimeout(timeout);
-  // }, []);
-
   useEffect(() => {
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
@@ -152,18 +145,19 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   useEffect(() => {
     const handler = async () => {
       updateVisual();
-      if (running || !startCell.current || !endCell.current) return alert("Start cell or end cell is not placed");
+      if (running) return;
+
       running = true;
-      await aStar(grid, startCell.current, endCell.current, drawCell);
+      const algo = localStorage.getItem("path-algorithm") || "astar";
+
+      await runPathfindingAlgorithm(algo, grid, startCell, endCell, drawCell);
       running = false;
     };
 
     eventBus.on("run_algo", handler);
-
-    return () => {
-      eventBus.off("run_algo", handler);
-    }
+    return () => eventBus.off("run_algo", handler);
   }, [grid, startCell, endCell, drawCell]);
+
 
   useTick(() => {
     if (containerRef.current && getCamUpdate() && mouseDown.current) {
