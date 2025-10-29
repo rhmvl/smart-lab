@@ -5,11 +5,8 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,html}",
   ],
-  darkMode: 'class', // <--- AKTIFKAN INI
-  theme: {
-    extend: {},
-  },
+  darkMode: 'class',
   plugins: [
-    require('tailwind-scrollbar'), // Tambahkan ini
+    require('tailwind-scrollbar'),
   ],
 }

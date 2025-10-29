@@ -1,5 +1,6 @@
 export const COLORS = {
   background: 0xA6A6A6,
+  primary: 0x6366f1,
   empty: 0xf5f5f5,
   wall: 0x2e3440,
   start: 0x81c784,

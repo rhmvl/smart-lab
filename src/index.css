@@ -65,6 +65,17 @@
     75% { transform: rotateZ(5deg); transform-origin: top center; }
   }
 
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   /* --- Animation utility tokens --- */
   --animate-slide-in: slide-in 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   --animate-spin-card: spin-card 8s linear infinite;
@@ -78,6 +89,7 @@
   --animate-float-shadow: float-shadow 6s ease-in-out infinite;
   --animate-gradient: gradient 15s ease infinite;
   --animate-zero-gravity: zero-gravity 12s ease-in-out infinite;
+  --animate-animate-fadeIn: fadeIn 0.3s ease-out;
 }
 
 @layer base {

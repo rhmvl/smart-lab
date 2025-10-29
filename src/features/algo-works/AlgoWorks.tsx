@@ -1,8 +1,16 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { ArrowLeft, BarChart, Network } from "lucide-react";
+<<<<<<< HEAD
 import { PathfindingToolbar } from "./components/PathfindingToolbar";
 import { PathfindingVisualizer } from "./visualizers/PathfindingVisualizer";
 import AlgoChallenge from './AlgoChallenge'; // <-- 1. Impor file baru
+=======
+import { PathfindingToolbar } from "./components/pathfinding/PathfindingToolbar";
+import { PathfindingCanvas } from "./components/pathfinding/PathfindingCanvas";
+import { PathfindingTutorialPopup } from "./components/pathfinding/TutorialPopup";
+import { SortingCanvas } from "./components/sorting/SortingCanvas";
+import { SortingToolbar } from "./components/sorting/SortingToolbar";
+>>>>>>> ba1843b68326b999cf0c33e43014112b9ee264ed
 
 const algorithmOptions = [
   {
@@ -11,8 +19,9 @@ const algorithmOptions = [
     description: "Eksplorasi algoritma pencarian jalur seperti Dijkstra dan A*.",
     color: "from-blue-500 to-indigo-600",
     icon: Network,
-    component: PathfindingVisualizer,
+    component: PathfindingCanvas,
     toolbar: PathfindingToolbar,
+    tutorialPopup: PathfindingTutorialPopup,
   },
   {
     key: "sorting",
@@ -20,8 +29,9 @@ const algorithmOptions = [
     description: "Lihat bagaimana algoritma pengurutan bekerja secara interaktif.",
     color: "from-emerald-500 to-green-700",
     icon: BarChart,
-    component: () => <></>,
-    toolbar: () => <></>,
+    component: SortingCanvas,
+    toolbar: SortingToolbar,
+    tutorialPopup: () => <></>,
   },
 ];
 
@@ -88,6 +98,7 @@ function VisualizerPage({ algo }: { algo: typeof algorithmOptions[number] }) {
   const navigate = useNavigate();
   const Component = algo.component;
   const Toolbar = algo.toolbar;
+  const TutorialPopup = algo.tutorialPopup;
 
   return (
     <div className="relative min-h-screen flex flex-col gap-4 p-6
@@ -95,22 +106,25 @@ function VisualizerPage({ algo }: { algo: typeof algorithmOptions[number] }) {
       transition-colors duration-300
     ">
       {/* Toolbar */}
-      <div className="
-        flex flex-wrap items-center justify-between gap-3
-        rounded-xl border border-gray-300/50 dark:border-gray-700/60
-        bg-white/70 dark:bg-gray-800/60 backdrop-blur-md
-        px-4 py-3 shadow-sm
-      ">
+      <div
+        className="
+          flex flex-wrap items-center justify-between gap-3
+          rounded-xl border border-gray-300/40 dark:border-gray-700/50
+          bg-white/70 dark:bg-gray-900/50 backdrop-blur-md
+          px-4 py-3 shadow-sm
+        "
+      >
         <button
-          onClick={() => navigate("/smart-lab/algo-works")}
+          onClick={() => navigate('/smart-lab/algo-works')}
           className="
             flex items-center gap-2 px-3 py-2 rounded-md font-medium transition
-            bg-gray-200 hover:bg-gray-300 text-gray-800
-            dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100
+            bg-gray-200/70 hover:bg-gray-300/80 text-gray-800
+            dark:bg-gray-700/70 dark:hover:bg-gray-600 dark:text-gray-100
+            active:scale-[0.97]
           "
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Kembali</span>
+          <span>Back</span>
         </button>
 
         <div className="flex-1 flex justify-end">
@@ -127,6 +141,8 @@ function VisualizerPage({ algo }: { algo: typeof algorithmOptions[number] }) {
       ">
         <Component />
       </div>
+
+      <TutorialPopup />
     </div>
   );
 }
