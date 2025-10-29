@@ -1,7 +1,7 @@
 .navbar {
-  @apply fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 shadow-md;
+    @apply fixed top-0 left-0 right-0 z-40 bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/30 shadow-md;
 }
 
 .notes-button {
-  @apply flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-full font-semibold shadow-md hover:from-indigo-600 hover:to-pink-600 transition-all cursor-pointer;
+    @apply flex items-center space-x-2 bg-gradient-to-r from-indigo-500 to-pink-500 text-white px-4 py-2 rounded-full font-semibold shadow-md hover:from-indigo-600 hover:to-pink-600 transition-all cursor-pointer;
 }

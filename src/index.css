@@ -1,19 +1,7 @@
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
-@import "./components/layout/Navbar.css";
-
-/* Reset dasar agar tampilan konsisten di semua browser */
-/*body {
-/*  margin: 0;
-/*  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-/*    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-/*    sans-serif;
-/*  -webkit-font-smoothing: antialiased;
-/*  -moz-osx-font-smoothing: grayscale;
-/*  background-color: #f0f2f5;
-/*}
-/* src/index.css */
+@import "./features/dashboard/Dashboard.css";
 
 @theme {
   @keyframes float {
@@ -36,24 +24,117 @@
     75% { transform: translate(-5px, 5px) rotate(0.5deg); }
   }
 
+  @keyframes slide-in {
+    from { transform: translateY(100px) rotate(-5deg); opacity: 0; }
+    to { transform: translateY(0) rotate(0deg); opacity: 1; }
+  }
+
+  @keyframes spin-card {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+  }
+
+  @keyframes counter-spin {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(-360deg); }
+  }
+
+  @keyframes breathe {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes side-to-side {
+    0%,100% { transform: translateX(0); }
+    50% { transform: translateX(10px); }
+  }
+
+  @keyframes up-and-down {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes flicker {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  @keyframes pendulum {
+    0%,100% { transform: rotateZ(0deg); transform-origin: top center; }
+    25% { transform: rotateZ(-5deg); transform-origin: top center; }
+    75% { transform: rotateZ(5deg); transform-origin: top center; }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* --- Animation utility tokens --- */
+  --animate-slide-in: slide-in 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  --animate-spin-card: spin-card 8s linear infinite;
+  --animate-counter-spin: counter-spin 8s linear infinite;
+  --animate-breathe: breathe 4s ease-in-out infinite;
+  --animate-side-to-side: side-to-side 5s ease-in-out infinite;
+  --animate-up-and-down: up-and-down 3s ease-in-out infinite;
+  --animate-flicker: flicker 1.5s ease-in-out infinite;
+  --animate-pendulum: pendulum 4s ease-in-out infinite;
   --animate-float: float 6s ease-in-out infinite;
   --animate-float-shadow: float-shadow 6s ease-in-out infinite;
   --animate-gradient: gradient 15s ease infinite;
   --animate-zero-gravity: zero-gravity 12s ease-in-out infinite;
+  --animate-animate-fadeIn: fadeIn 0.3s ease-out;
 }
 
+@layer base {
+  html, body, #root {
+    @apply w-full h-full m-0 p-0 font-sans overflow-hidden;
+    @apply transition-colors duration-700 ease-in-out;
+  }
 
-html, body, #root {
-  width: 100%;
-  height: 100%;
-  overflow: scroll;
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-.animated-background {
-  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
-  animation: gradient-animation 15s ease infinite;
+@layer base {
+  body {
+    @apply bg-fixed bg-[length:400%_400%] text-gray-900 dark:text-white animate-[var(--animate-gradient)];
+    @apply bg-[linear-gradient(-45deg,#ee7752,#e73c7e,#23a6d5,#23d5ab)] dark:bg-[linear-gradient(-45deg,#1e3a8a,#312e81,#0f172a,#1e293b)];
+  }
+}
+
+/* === OPTIONAL SCROLL CONTAINER === */
+@layer components {
+  .feature-scroll-container {
+    @apply h-screen overflow-y-auto pt-16 pb-8 box-border;
+  }
+}
+
+/* === Animasi Masuk Halaman Fitur === */
+
+/* Keyframes untuk 'fade in' dan 'slide up' */
+@keyframes pageFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* Mulai 20px dari bawah */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Selesai di posisi normal */
+  }
+}
+
+/* Kelas yang akan kita terapkan ke setiap halaman */
+.page-enter-animation {
+  /* Terapkan animasi */
+  animation: pageFadeInUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  /* 'forwards' berarti style di 'to' akan tetap dipakai setelah selesai */
 }

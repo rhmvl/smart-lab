@@ -5,5 +5,8 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx,html}",
   ],
-  plugins: [],
+  darkMode: 'class',
+  plugins: [
+    require('tailwind-scrollbar'),
+  ],
 }

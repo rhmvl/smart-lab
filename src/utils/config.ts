@@ -1,9 +1,8 @@
 import { CpuIcon, CalculatorIcon, FlaskRoundIcon } from "lucide-react";
 
-// TODO: Use localStorage
-export const ROWS = 30
-export const COLS = 30
-export const CELL_SIZE = 50
+export const ROWS = 80;
+export const COLS = 80;
+export const CELL_SIZE = 50;
 
 export const WEBSITE_URL = "/smart-lab";
 
@@ -15,7 +14,7 @@ export const WEB_PAGE = [
     title: 'Algo Works',
     description: 'Visualisasikan cara kerja algoritma secara interaktif.',
     color: '#007bff',
-    delay: '0s' // ++ Tambahkan delay
+    delay: '0s'
   },
   {
     id: 'calc-forge',
@@ -24,7 +23,7 @@ export const WEB_PAGE = [
     title: 'Calc Forge',
     description: 'Hitung rumus ilmiah dengan cepat dan akurat.',
     color: '#28a745',
-    delay: '0.5s' // ++ Tambahkan delay
+    delay: '0.5s'
   },
   {
     id: 'ar-lab',
@@ -33,7 +32,7 @@ export const WEB_PAGE = [
     path: `${WEBSITE_URL}/ar-lab`,
     description: 'Ukur objek di dunia nyata menggunakan kamera Anda.',
     color: '#ffc107',
-    delay: '1s' // ++ Tambahkan delay
+    delay: '1s'
   },
 ]
 

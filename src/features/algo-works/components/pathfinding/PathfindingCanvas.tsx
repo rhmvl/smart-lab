@@ -1,23 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, memo } from "react";
 import { Container, Graphics, FederatedPointerEvent } from "pixi.js";
-import { Application, extend, useApplication, useTick } from "@pixi/react";
-import { Cell, type CellState } from "../../../types/cell.ts";
-import { COLORS } from "../../../utils/colors.ts";
-import { CELL_SIZE, COLS, ROWS } from "../../../utils/config.ts";
-import { eventBus } from "../../../utils/eventBus.ts";
-import { aStar } from "../algorithms/pathfinding/astar.ts";
+import { Application, extend, useTick } from "@pixi/react";
+import { Cell, type CellState } from "../../../../types/cell.ts";
+import { COLORS } from "../../../../utils/colors.ts";
+import { CELL_SIZE, COLS, ROWS } from "../../../../utils/config.ts";
+import { eventBus } from "../../../../utils/eventBus.ts";
+import { aStar } from "../../algorithms/pathfinding/astar.ts";
+import { getOrCreateGrid } from "../../../../utils/gridStore.ts";
 
 extend({Container, Graphics});
 
-const createGrid = (): Cell[][] =>
-  Array.from({ length: ROWS }, (_, y) =>
-    Array.from({ length: COLS }, (_, x) => new Cell(x, y, 'empty'))
-  );
-
 // TODO: The grid is not loaded when changing the page.
+// TODO: Maybe improve the visualizer
 export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: number, viewportHeight: number }) => {
-  const [grid] = useState<Cell[][]>(createGrid);
-  useApplication();
+  const gridRef = useRef<Cell[][]>(getOrCreateGrid());
+  const grid = gridRef.current;
   const getCamUpdate = () => !!parseInt(localStorage.getItem("camera-update") || '0');
 
   // FOR CAMERA
@@ -53,7 +50,6 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   };
 
   const updateVisual = useCallback(() => {
-    // TODO: Maybe there is a better way for performace.
     grid.map((row) => {
       row.map((cell) => cell.updateState(cell.state))
     })
@@ -135,7 +131,7 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
     const handleUp = () => (mouseDown.current = false);
     const offRun = () => (running = !running);
 
-    updateVisual(); // Update the grid visual on startup.
+    updateVisual();
 
     eventBus.on("toggle_run", offRun);
     window.addEventListener("pointerup", handleUp);
@@ -149,18 +145,19 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   useEffect(() => {
     const handler = async () => {
       updateVisual();
-      if (running || !startCell.current || !endCell.current) return alert("Start cell or end cell is not placed");
+      if (running) return;
+
       running = true;
-      await aStar(grid, startCell.current, endCell.current, drawCell);
+      const algo = localStorage.getItem("path-algorithm") || "astar";
+
+      await runPathfindingAlgorithm(algo, grid, startCell, endCell, drawCell);
       running = false;
     };
 
     eventBus.on("run_algo", handler);
-
-    return () => {
-      eventBus.off("run_algo", handler);
-    }
+    return () => eventBus.off("run_algo", handler);
   }, [grid, startCell, endCell, drawCell]);
+
 
   useTick(() => {
     if (containerRef.current && getCamUpdate() && mouseDown.current) {
@@ -210,11 +207,12 @@ export const CanvasLayer = ({ viewportWidth, viewportHeight }: { viewportWidth: 
   );
 }
 
-export const Grid = () => {
+export const PathfindingCanvas = memo(() => {
   const [size, setSize] = useState({ 
     width: window.innerWidth, 
     height: window.innerHeight 
   });
+  const isActive = location.pathname.includes("/smart-lab/algo-works/pathfinding");
 
   useEffect(() => {
     const handleResize = () => setSize({ width: window.innerWidth, height: window.innerHeight });
@@ -222,8 +220,11 @@ export const Grid = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  if (!isActive) return null;
+
   return (
     <Application
+      resizeTo={window}
       width={size.width}
       height={size.height}
       backgroundColor={COLORS.background}
@@ -231,4 +232,4 @@ export const Grid = () => {
       <CanvasLayer viewportHeight={size.height} viewportWidth={size.width} />
     </Application>
   )
-}
+});
