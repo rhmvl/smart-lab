@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Camera, Crosshair } from 'lucide-react'; // Impor ikon
 

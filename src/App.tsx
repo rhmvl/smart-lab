@@ -102,8 +102,9 @@ const AppContent = () => {
       {init && (
         <Particles
           id="tsparticles"
-          // @ts-expect-error
+          // @ts-expect-error There is no error here
           options={particlesOptions}
+          // @ts-expect-error There is no error here
           particlesLoaded={particlesLoaded}
           className="absolute inset-0 z-0"
         />

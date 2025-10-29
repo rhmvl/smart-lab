@@ -1,4 +1,3 @@
-import React from 'react';
 import { FeatureView } from '../../components/layout/FeatureView'; // Impor komponen placeholder
 
 export default function ArLabCrosshair() {

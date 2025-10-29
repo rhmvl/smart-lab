@@ -7,6 +7,12 @@ export type FacingMode = 'environment' | 'user';
 export type DetectionMode = 'measure' | 'hand' | 'face' | 'age';
 export type MeasurementUnit = 'cm' | 'mm' | 'm' | 'inch' | 'ft';
 
+type Measurement = {
+  value: number;
+  unit: MeasurementUnit;
+  timestamp: number;
+};
+
 // let ageModel: tf.GraphModel | undefined;
 let handLandmarker: HandLandmarker | undefined;
 let faceDetector: FaceDetector | undefined;
@@ -30,7 +36,7 @@ export function useArLabLogic() {
   const [pixelsPerUnit, setPixelsPerUnit] = useState<number | null>(null);
   const [knownLength, setKnownLength] = useState('8.56');
   const [currentUnit, setCurrentUnit] = useState<MeasurementUnit>('cm');
-  const [savedMeasurements, setSavedMeasurements] = useState<number[]>([]);
+  const [savedMeasurements, setSavedMeasurements] = useState<Measurement[]>([]);
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState<Point | null>(null);
@@ -304,7 +310,13 @@ export function useArLabLogic() {
 
   const saveCurrentMeasurement = useCallback(() => {
     const value = convertDistance(pixelDistance, pixelsPerUnit, currentUnit);
-    if (value > 0) setSavedMeasurements(prev => [value, ...prev.slice(0, 4)]);
+ 
+    if (value > 0)
+      setSavedMeasurements(prev => [
+        { value, unit: currentUnit, timestamp: Date.now() },
+        ...prev.slice(0, 4)
+      ]);
+
     setPixelDistance(0);
     setStartPoint(null);
     setEndPoint(null);
