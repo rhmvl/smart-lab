@@ -171,8 +171,10 @@ export default function ArLab() {
                 Gambar garis pada objek untuk mengukur panjang.
               </p>
 
-              <div className="flex items-center justify-center gap-2 text-yellow-300 text-2xl font-bold mb-3">
-                {logic.convertDistance(logic.pixelDistance).toFixed(1)}
+              <div className="flex items-center justify-center gap-2 text-yellow-300 text-2xl font-bold mb-3"> 
+                {logic.pixelsPerUnit
+                  ? logic.convertDistance(logic.pixelDistance, logic.pixelsPerUnit, logic.currentUnit).toFixed(1)
+                  : '–'}
                 <select
                   value={logic.currentUnit}
                   onChange={(e) =>

@@ -145,8 +145,8 @@ export default function Dashboard({ onSelectFeature, setNotesOpen, setSettingsOp
               animation: `var(${cardAnimations[index % cardAnimations.length]})`,
               'animationDelay': `${feature.delay || "0s"}`,
               willChange: "transform, opacity",
-              '--rotateX': '0deg',
-              '--rotateY': '0deg'
+              // '--rotateX': '0deg',
+              // '--rotateY': '0deg'
             }}
           />
         ))}

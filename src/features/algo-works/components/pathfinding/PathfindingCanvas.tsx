@@ -5,8 +5,8 @@ import { Cell, type CellState } from "../../../../types/cell.ts";
 import { COLORS } from "../../../../utils/colors.ts";
 import { CELL_SIZE, COLS, ROWS } from "../../../../utils/config.ts";
 import { eventBus } from "../../../../utils/eventBus.ts";
-import { aStar } from "../../algorithms/pathfinding/astar.ts";
 import { getOrCreateGrid } from "../../../../utils/gridStore.ts";
+import { runPathfindingAlgorithm } from "../../algorithms/runAlgorithm.ts";
 
 extend({Container, Graphics});
 

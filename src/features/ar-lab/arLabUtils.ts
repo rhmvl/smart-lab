@@ -1,3 +1,5 @@
+import type { Detection } from "@mediapipe/tasks-vision";
+
 type Point = { x: number; y: number };
 type MeasurementUnit = 'cm' | 'mm' | 'm' | 'inch' | 'ft';
 
@@ -83,7 +85,7 @@ export const drawHandLandmarks = (
 
 export const drawFaceDetections = (
   ctx: CanvasRenderingContext2D,
-  detections: Array<{ boundingBox: { originX: number; originY: number; width: number; height: number } }> | undefined
+  detections: Detection[] | undefined
 ): void => {
   if (!detections?.length) return;
 
@@ -91,7 +93,9 @@ export const drawFaceDetections = (
   ctx.lineWidth = 3;
   ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
 
-  for (const { boundingBox: bbox } of detections) {
+  for (const detection of detections) {
+    // Some MediaPipe models use detection.boundingBox, others detection.boundingBoxes[0]
+    const bbox = (detection as any).boundingBox || (detection as any).boundingBoxes?.[0];
     if (!bbox || typeof bbox.originX !== 'number') continue;
 
     ctx.beginPath();
