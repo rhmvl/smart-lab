@@ -221,7 +221,7 @@ export default function ArLab() {
                   >
                     <span>{m.value.toFixed(2)} {m.unit}</span>
                     <span className="text-gray-400 text-xs">
-                      {m.timestamp?.toLocaleTimeString?.()}
+                      {new Date(m.timestamp).toLocaleTimeString()}
                     </span>
                   </li>
                 ))}
