@@ -18,8 +18,7 @@ export const SortingCanvas = memo(() => {
   const isSortingRef = useRef(false);
 
   const delay = () => Number(localStorage.getItem("sort-delay")) || 50;
-  const algorithm = localStorage.getItem("sort-algorithm") || "bubble";
-
+  
   const drawBars = (
     ctx: CanvasRenderingContext2D,
     bars: Bar[],
@@ -111,7 +110,8 @@ export const SortingCanvas = memo(() => {
     const handleSort = async () => {
       if (isSortingRef.current) return; // prevent overlapping sorts
       isSortingRef.current = true;
-
+      
+      const algorithm = localStorage.getItem("sort-algorithm") || "bubble";
       const bars = barsRef.current;
       await runSortingAlgorithm(algorithm, bars, swapBars, render, delay, isSortingRef);
 
@@ -121,7 +121,7 @@ export const SortingCanvas = memo(() => {
 
     eventBus.on("run_sort", handleSort);
     return () => eventBus.off("run_sort", handleSort);
-  }, [algorithm, delay]);
+  }, [delay]);
 
   useEffect(() => {
     const handleStop = () => {
