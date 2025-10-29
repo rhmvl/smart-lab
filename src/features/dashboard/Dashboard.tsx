@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import { Settings, Notebook, type LucideIcon } from "lucide-react";
-import FeatureCard from "./FeatureCard";
+import FeatureCard from './FeatureCard';
+import './Dashboard.css';
 import SettingsPanel from "../../components/common/SettingsPanel";
 import { WEB_PAGE } from "../../utils/config";
 
@@ -18,22 +19,33 @@ const animationVars = [
   "--animate-side-to-side",
   "--animate-up-and-down",
   "--animate-pendulum",
+  "animate-flicker", // Flicker sebagai loop
 ];
 
 const randomAnimations = () =>
   [...animationVars].sort(() => Math.random() - 0.5).slice(0, 3);
 
 const cardPositions = [
-  { top: "20%", left: "15%" },
-  { top: "40%", left: "45%" },
+  { top: "20%", left: "16%" },
+  { top: "40%", left: "44%" },
   { top: "20%", left: "70%" },
 ];
+
+const generatePositions = () => [
+  { top: "15%", left: "15%" }, // Menggunakan posisi baru yang Anda minta
+{ top: "10%", left: "40%" },
+{ top: "15%", left: "65%" },
+].sort(() => Math.random() - 0.5); // Acak array posisi
 
 export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardProps) {
   const [init, setInit] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
-  const [cardAnimations] = useState(randomAnimations);
+  // State untuk posisi (tetap) dan animasi (akan diubah)
+  const [positions] = useState(generatePositions());
+  const [cardAnimations, setCardAnimations] = useState<string[]>([]); // Mulai kosong
+  // Memoize animasi acak awal
+  const initialRandomAnimations = useMemo(() => randomAnimations(), []);
 
   useEffect(() => {
     initParticlesEngine(async (engine) => {
@@ -69,6 +81,25 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  // === EFEK BARU UNTUK MENGATUR ANIMASI ===
+  useEffect(() => {
+    // 1. Terapkan animasi looping setelah animasi masuk selesai (misal 1 detik)
+    const startLoopTimer = setTimeout(() => {
+      setCardAnimations(initialRandomAnimations); // Terapkan animasi loop acak
+    }, 1000); // Harus cocok dengan durasi animasi slide-in
+
+    // 2. Ganti animasi looping setiap 5-7 detik (seperti sebelumnya)
+    const changeLoopInterval = setInterval(() => {
+      setCardAnimations(randomAnimations());
+    }, Math.random() * 2000 + 5000); // 5-7 detik
+
+    // Cleanup timers
+    return () => {
+      clearTimeout(startLoopTimer);
+      clearInterval(changeLoopInterval);
+    };
+  }, [initialRandomAnimations]); // Hanya jalankan sekali
 
   /** Particle setup */
   const particlesOptions = {
@@ -182,8 +213,11 @@ export default function Dashboard({ onSelectFeature, setNotesOpen }: DashboardPr
             style={{
               ...cardPositions[index],
               animation: `var(${cardAnimations[index % cardAnimations.length]})`,
-              animationDelay: `${feature.delay || "0s"}`,
+              // Ganti 'animationDelay' dengan '--animation-delay'
+              '--animation-delay': `${feature.delay || "0s"}`, // <-- INI PERBAIKANNYA
               willChange: "transform, opacity",
+              '--rotateX': '0deg', // Inisialisasi var CSS
+              '--rotateY': '0deg'  // Inisialiasi var CSS
             }}
           />
         ))}

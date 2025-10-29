@@ -2,6 +2,7 @@ import { Routes, Route, useNavigate } from "react-router-dom";
 import { ArrowLeft, BarChart, Network } from "lucide-react";
 import { PathfindingToolbar } from "./components/PathfindingToolbar";
 import { PathfindingVisualizer } from "./visualizers/PathfindingVisualizer";
+import AlgoChallenge from './AlgoChallenge'; // <-- 1. Impor file baru
 
 const algorithmOptions = [
   {

@@ -140,3 +140,57 @@
   border-color: #4299e1;
   color: white;
 }
+
+/* ... (style .settings-panel, .theme-btn, .dark, dll. Anda) ... */
+
+.audio-settings {
+  border-top: 1px solid #eee; /* Garis pemisah */
+  margin-top: 15px;
+  padding-top: 15px;
+}
+
+.dark .audio-settings {
+  border-top-color: #4a5568; /* Garis pemisah dark mode */
+}
+
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.setting-item label {
+  font-weight: 500;
+  color: #4a5568;
+}
+.dark .setting-item label {
+  color: #cbd5e0;
+}
+
+.toggle-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f0f2f5;
+  color: #a0aec0; /* Abu-abu */
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 60px; /* Lebar minimum */
+  text-align: center;
+}
+.dark .toggle-btn {
+  background-color: #4a5568;
+  border-color: #718096;
+  color: #a0aec0;
+}
+
+.toggle-btn.active {
+  background-color: #28a745; /* Hijau */
+  border-color: #28a745;
+  color: white;
+}
+.dark .toggle-btn.active {
+  background-color: #38a169; /* Hijau (dark) */
+  border-color: #38a169;
+}

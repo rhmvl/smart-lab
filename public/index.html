@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/favicon.png" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Lab</title>
+
+    <style>
+      body { margin: 0; background-color: #1a202c; } /* Latar gelap default */
+
+      /* Mode Terang (Default) */
+      #splash-screen { background-color: #ffffff; color: #222222; }
+      .spinner-logo {
+        width: 100px; /* Atur lebar logo */
+        height: 100px; /* Atur tinggi logo */
+        /* Terapkan animasi 'spin' selama 2 detik, berulang terus */
+        animation: spin 2s linear infinite;
+      }
+
+      /* Definisi animasi 'spin' */
+      @keyframes spin {
+        from {
+          transform: rotate(0deg); /* Mulai dari 0 derajat */
+        }
+        to {
+          transform: rotate(360deg); /* Selesai di 360 derajat */
+        }
+      }
+
+      /* Ini juga bagian penting untuk logo Anda, */
+      /* agar logonya menjadi putih saat mode gelap aktif */
+      @media (prefers-color-scheme: dark) {
+        .spinner-logo {
+          filter: invert(1); /* Balik warna logo jadi putih */
+        }
+      }
+      /* Deteksi Mode Gelap Bawaan Browser */
+      @media (prefers-color-scheme: dark) {
+        #splash-screen { background-color: #1a202c; color: #e2e8f0; }
+        .spinner-logo { filter: invert(1); } /* Balik logo jadi putih */
+      }
+
+      /* Kontainer Splash Screen */
+      #splash-screen {
+        position: fixed; inset: 0; z-index: 10000;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      }
+      /* Animasi "Membuka" (Percikan/Zoom) */
+      #splash-screen.hidden {
+        opacity: 0;
+        transform: scale(1.2); /* Efek zoom/percikan saat hilang */
+        pointer-events: none;
+      }
+      .spinner-logo {
+        width: 100px; height: 100px;
+        animation: spin 2s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .loading-text-container { margin-top: 25px; width: 80%; max-width: 400px; text-align: center; }
+      #loading-text {
+        font-size: 1rem; font-family: -apple-system, sans-serif; font-weight: 500;
+        transition: opacity 0.4s ease-in-out;
+      }
+      #loading-timer { /* Teks 5s, 4s, 3s... */
+        margin-top: 10px; font-size: 0.9rem; color: #888;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="splash-screen">
+      <img src="/loading-logo.png" alt="Loading Smart Lab..." class="spinner-logo" />
+      <div class="loading-text-container">
+        <p id="loading-text">Sedang menyiapkan web mohon tunggu...</p>
+        <p id="loading-timer">5s</p>
+      </div>
+    </div>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

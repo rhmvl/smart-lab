@@ -24,4 +24,9 @@ export default function CalcForge() {
     // Jika layar besar (desktop/tablet), tampilkan CalcForgeDesktop (yang punya 2 kolom)
     return <CalcForgeDesktop />;
   }
+  return (
+    <div className="page-enter-animation"> {/* <-- BUNGKUS DI SINI */}
+    {Content}
+    </div>
+  );
 }

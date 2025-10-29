@@ -85,7 +85,7 @@ className = '', // Terima kelas dari Dashboard
 }: FeatureCardProps) {
 
   // Gabungkan kelas
-  const combinedClassName = `group absolute ${className} w-[180px] min-h-[220px] p-5
+  const combinedClassName = `group absolute ${className} w-[180px] min-h-[210px] p-5
   bg-white/90 dark:bg-gray-800/80 backdrop-blur-sm
   border border-white/20 dark:border-gray-700/30
   rounded-2xl shadow-lg cursor-pointer

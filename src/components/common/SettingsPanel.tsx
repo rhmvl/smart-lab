@@ -53,6 +53,22 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
              {/* <button onClick={() => setTheme('system')}>System</button> */}
           </div>
         </div>
+        {/* === PENGATURAN AUDIO BARU === */}
+        <div className="settings-body audio-settings">
+          <p>Audio:</p>
+          <div className="setting-item">
+            <label htmlFor="bgm-toggle">Musik Latar (BGM)</label>
+            <button onClick={toggleBgm} className={`toggle-btn ${isBgmOn ? 'active' : ''}`}>
+              {isBgmOn ? 'ON' : 'OFF'}
+            </button>
+          </div>
+          <div className="setting-item">
+            <label htmlFor="sfx-toggle">Efek Suara (SFX)</label>
+            <button onClick={toggleSfx} className={`toggle-btn ${isSfxOn ? 'active' : ''}`}>
+              {isSfxOn ? 'ON' : 'OFF'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
